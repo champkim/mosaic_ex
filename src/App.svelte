@@ -1,45 +1,59 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import Counter from './lib/Counter.svelte'
+  import { Splitpanes } from "svelte-splitpanes";
+  import Panel from "./lib/Panel.svelte";
+  import type { mosaic } from "./type/common";
+
+  const addPanel = (nodes: Array<any>, index?) => {
+    console.log(nodes, index);
+    if (index >= 0 && typeof nodes[index] === "string") {
+      nodes[index] = {
+        horizontal: false,
+        nodes: [nodes[index], "create"],
+      };
+    } else if (typeof nodes[index] === "object") {
+      nodes[index].nodes.push("new");
+    } else {
+      nodes.push("c");
+    }
+    console.log(nodes, mosaicData);
+    mosaicData = mosaicData;
+  };
+
+  const deletePanel = (nodes, index) => {
+    nodes.splice(index, 1);
+    mosaicData = mosaicData;
+  };
+
+  let mosaicData: mosaic = {
+    horizontal: false,
+    nodes: [
+      "a",
+      {
+        horizontal: true,
+        nodes: [
+          "b",
+          "c",
+          {
+            horizontal: false,
+            nodes: ["d", "e", "f", { horizontal: true, nodes: ["g", "h"] }],
+          },
+        ],
+      },
+    ],
+  };
 </script>
 
-<main>
-  <div>
-    <a href="https://vitejs.dev" target="_blank"> 
-      <img src="/vite.svg" class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank"> 
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
-</main>
-
-<style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
-</style>
+<div>
+  <button on:click={() => addPanel(mosaicData.nodes)}>+</button>
+</div>
+<Splitpanes class="default-theme" style="height: 100%">
+  {#each mosaicData.nodes as node, index}
+    <Panel
+      {node}
+      nodes={mosaicData.nodes}
+      {index}
+      {deletePanel}
+      addPanel={() => addPanel(mosaicData.nodes, index)}
+    />
+  {/each}
+</Splitpanes>
