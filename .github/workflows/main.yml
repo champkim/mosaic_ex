@@ -19,7 +19,10 @@ jobs:
           
       - name: Install modules
         run: npm install
-
+        
+      - name: Test Code Linting
+        run: npm run lint
+        
       - name: Save Code Linting Report JSON
         # npm script for ESLint
         # eslint --output-file eslint_report.json --format json src
@@ -27,11 +30,13 @@ jobs:
         run: npm run lint:report
         # Continue to the next step even if this fails
         continue-on-error: true
+        
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@v2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           report-json: "eslint_report.json"
+          
       - name: Upload ESLint report
         uses: actions/upload-artifact@v2
         with:
