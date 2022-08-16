@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint --ignore-path .gitignore . --ext .js,.ts,.svelte",
+    "lint:report": "eslint . --ext .js,.ts,.svelte --output-file eslint_report.json --format json",
     "fix": "eslint --fix --ignore-path .gitignore . --ext .js,.ts,.svelte"
   },
   "devDependencies": {
