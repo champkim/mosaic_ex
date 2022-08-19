@@ -15,8 +15,8 @@
 <style>
   .mosaic {
     display: block;
-    width: calc(100%-4px);
-    height: calc(100%-4px);
+    width: calc(100% - 8px);
+    height: calc(100% - 56px);
     padding: 4px;
     background: #636363;
     display: flex;
