@@ -1,11 +1,11 @@
 <script lang="ts">
   import PanelTopBar from "./PanelTopBar.svelte";
-  let index = 0;
+  export let node = "";
 </script>
 
 <div class="panel">
   <PanelTopBar />
-  <div class="contents">Window {index}</div>
+  <div class="contents">Window {node}</div>
 </div>
 
 <style>

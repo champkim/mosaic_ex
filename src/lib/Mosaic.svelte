@@ -4,8 +4,8 @@
 </script>
 
 <div class="mosaic">
-  {#each nodes as _, index}
-    <Panel />
+  {#each nodes as node, index}
+    <Panel {node} />
     {#if index - 1 !== nodes.length}
       <div class="width-grap" />
     {/if}
