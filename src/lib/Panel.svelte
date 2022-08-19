@@ -13,5 +13,6 @@
     width: 100%;
     background: #fefefe;
     border: 2px solid #636363;
+    border-radius: 4px;
   }
 </style>
