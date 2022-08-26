@@ -35,11 +35,11 @@
   }
   .git-hub-logo {
     display: inline-block;
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     background-size: cover;
     background-repeat: no-repeat;
-    background-image: url(https://cdn-icons-png.flaticon.com/512/25/25231.png);
+    background-image: url(https://nomcopter.github.io/react-mosaic/d56df49a807a9fd06eb1667a84d3810e.png);
     cursor: pointer;
   }
 </style>
