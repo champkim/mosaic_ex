@@ -6,10 +6,14 @@
   export let insetrec: insetrect = { top: 0, left: 0, bottom: 0, right: 0 }
   export let direction: direction
 
-  const BASIC_PERCENT = 50
+  let insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}%`;
 
-  let insetStr: string = '0% 0% 0% 0%'
-  insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `
+  const setInsetRec = (newInsetrec) => {
+    insetrec = { ...newInsetrec };
+    insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}%`;
+    console.log(insetStr);
+  };
+  if (typeof node === "string") console.log(insetrec, insetStr);
 
   console.log(
     node +
@@ -43,28 +47,17 @@
   }
 </script>
 
-{#if typeof node === 'string'}
-  <div
-    class="panel"
-    style="inset:{`${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `}"
-  >
+{#if typeof node === "string"}
+  <div class="panel" style="inset:{insetStr}">
     <PanelTopBar />
     <div class="contents">Window {node}</div>
   </div>
-{:else if typeof node === 'object'}
-  <svelte:self
-    node={node.first}
-    direction={node.direction}
-    insetrec={insetrec1}
-  />
+{:else if typeof node === "object"}
+  <svelte:self node={node.first} insetrec={insetrec1} />
   {#if node.second}
-    <Split direction={node.direction} insetrec={insetrec2} />
+    <Split direction={node.direction} insetrec={insetrec2} {setInsetRec} />
   {/if}
-  <svelte:self
-    node={node.second}
-    direction={node.direction}
-    insetrec={insetrec2}
-  />
+  <svelte:self node={node.second} insetrec={insetrec2} />
 {/if}
 
 <style>

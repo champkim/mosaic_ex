@@ -1,34 +1,66 @@
 <script lang="ts">
-  import type { direction, insetrect } from './type/commonType'
-  export let direction: direction
-  export let insetrec: insetrect
+  import { onMount } from "svelte";
+  import type { direction, insetrect } from "./type/commonType";
+  export let direction: direction;
+  export let insetrec: insetrect;
+  export let setInsetRec: Function;
+  let splitRef;
 
-  let insetStr: string = '0% 0% 0% 0%'
-  insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `
-  console.log('[Split] ' + insetStr + '[direction] ' + direction)
+  $: insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `;
+  // console.log("[Split] " + insetStr + "[direction] " + direction);
+
+  onMount(() => {
+    function resize(e) {
+      const parent = splitRef.parentElement.getBoundingClientRect();
+      if (direction === "column") {
+        const percent = ((e.clientY - parent.top) / parent.height) * 100.0;
+        setInsetRec({ ...insetrec, left: percent });
+      } else {
+        const percent = ((e.clientX - parent.left) / parent.width) * 100.0;
+        setInsetRec({ ...insetrec, top: percent });
+      }
+    }
+
+    splitRef.addEventListener(
+      "mousedown",
+      function (e) {
+        document.addEventListener("mousemove", resize, false);
+      },
+      false
+    );
+    document.addEventListener(
+      "mouseup",
+      function () {
+        document.removeEventListener("mousemove", resize, false);
+      },
+      false
+    );
+  });
 </script>
 
 <div
+  bind:this={splitRef}
   class="split {direction}"
   style="inset: {`${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `}"
 />
 
 <style>
   .split {
-    cursor: ew-resize;
     z-index: 1;
     position: absolute;
   }
   .split.row {
+    cursor: ew-resize;
     width: 6px !important;
-    height: 100%;
+    margin-left: -3px;
   }
   .split.column {
+    cursor: ns-resize;
     height: 6px !important;
-    width: 100%;
+    margin-top: -3px;
   }
 
   .split:hover {
-    background: blue;
+    background: rgba(125, 188, 255, 0.6);
   }
 </style>
