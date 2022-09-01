@@ -1,11 +1,18 @@
 <script lang="ts">
+  function splitWindowClick() {
+    alert('split Window')
+  }
+
+  function closeWindowClick() {
+    alert('close Window')
+  }
 </script>
 
 <div class="panel-topbar">
   <div>Topbar</div>
   <div class="button-wrap">
-    <button>+</button>
-    <button>-</button>
+    <button on:click={splitWindowClick}>+</button>
+    <button on:click={closeWindowClick}>-</button>
   </div>
 </div>
 
