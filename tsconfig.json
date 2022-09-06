@@ -6,6 +6,7 @@
     "module": "ESNext",
     "resolveJsonModule": true,
     "baseUrl": ".",
+
     /**
      * Typecheck JS in `.svelte` and `.js` files by default.
      * Disable checkJs if you'd like to use dynamic types in JS.
@@ -14,7 +15,11 @@
      */
     "allowJs": true,
     "checkJs": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+
+    "declaration": true /* Generates corresponding '.d.ts' file. */,
+    "outDir": "dist" /* Redirect output structure to the directory. */,
+    "typeRoots": ["src/lib/type/typeUtils.ts"]
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
   "references": [{ "path": "./tsconfig.node.json" }],

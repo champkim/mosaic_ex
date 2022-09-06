@@ -1,11 +1,16 @@
 <script lang="ts">
   import Panel from "./Panel.svelte";
-  import type { mosaic } from "./type/commonType";
-  export let mosaicData: mosaic;
+  import type { MosaicNode, MosaicBranch } from "./type/commonType";
+  import { BoundingBox } from "./util/BoundingBox";
+  export let mosaicData: MosaicNode<number>;
+
+  let boundingBox: BoundingBox = BoundingBox.empty();
+  let path: MosaicBranch[] = [];
 </script>
 
-<div class="mosaic" style="flex-direction:{mosaicData.direction}">
-  <Panel node={mosaicData} direction={mosaicData.direction} />
+<div class="mosaic" style="flex-direction:{mosaicData}">
+  <Panel node={mosaicData} {boundingBox} {path} />
+  <!-- direction={mosaicData.direction} /> -->
 </div>
 
 <style>

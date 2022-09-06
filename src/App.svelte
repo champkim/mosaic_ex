@@ -1,23 +1,25 @@
 <script lang="ts">
-  import Mosaic from './lib/Mosaic.svelte'
-  import TopBar from './lib/TopBar.svelte'
-  import type { mosaic } from './lib/type/commonType'
+  import Mosaic from "./lib/Mosaic.svelte";
+  import TopBar from "./lib/TopBar.svelte";
+  import type { MosaicParent } from "./lib/type/commonType";
 
-  const mosaicData: mosaic = {
-    direction: 'row',
-    first: 'a',
+  let currentNode: MosaicParent<number> = {
+    direction: "row",
+    first: 1,
     //second: 'b'
     second: {
-      direction: 'column',
-      first: 'b',
-      second: 'c'
-    }
-  }
+      direction: "column",
+      first: 2,
+      second: 3,
+    },
+  };
+
+  //console.log(currentNode);
 </script>
 
 <div class="mosaic-ex">
-  <TopBar />
-  <Mosaic {mosaicData} />
+  <TopBar bind:currentNode />
+  <Mosaic bind:mosaicData={currentNode} />
 </div>
 
 <style>
