@@ -50,58 +50,59 @@ class MosaicPanel {
     return this.panelMarkups;
   }
 
-  //   AddToTopRight(node: MosaicNode<number>): MosaicNode<number> {
-  //     //let { currentNode } = this.state;
-  //     console.log(node);
-  //     if (node) {
-  //       const path = getPathToCorner(node, Corner.TOP_RIGHT);
-  //       console.log(path);
+  // AddToTopRight(node: MosaicNode<number>): MosaicNode<number> {
+  //   //let { node } = this.state;
+  //   console.log(node);
+  //   if (node) {
+  //     const path = getPathToCorner(node, Corner.TOP_RIGHT);
+  //     console.log(path);
 
-  //       const parent = getNodeAtPath(
-  //         node,
-  //         dropRight(path)
-  //       ) as MosaicParent<number>;
-  //       //console.log("[parent] " + parent);
-  //       const destination = getNodeAtPath(node, path) as MosaicNode<number>;
-  //       //console.log("[destination] " + destination);
-  //       const direction: MosaicDirection = parent
-  //         ? getOtherDirection(parent.direction)
-  //         : "row";
-  //       console.log("[direction] " + direction);
+  //     const parent = getNodeAtPath(
+  //       node,
+  //       dropRight(path)
+  //     ) as MosaicParent<number>;
+  //     //console.log("[parent] " + parent);
+  //     const destination = getNodeAtPath(node, path) as MosaicNode<number>;
+  //     //console.log("[destination] " + destination);
+  //     const direction: MosaicDirection = parent
+  //       ? getOtherDirection(parent.direction)
+  //       : "row";
+  //     console.log("[direction] " + direction);
 
-  //       let first: MosaicNode<number>;
-  //       let second: MosaicNode<number>;
-  //       if (direction === "row") {
-  //         first = destination;
-  //         second = ++this.windowCount;
-  //       } else {
-  //         first = ++this.windowCount;
-  //         second = destination;
-  //       }
-
-  //       node = updateTree(node, [
-  //         {
-  //           path,
-  //           spec: {
-  //             $set: {
-  //               direction,
-  //               first,
-  //               second,
-  //             },
-  //           },
-  //         },
-  //       ]);
+  //     let first: MosaicNode<number>;
+  //     let second: MosaicNode<number>;
+  //     if (direction === "row") {
+  //       first = destination;
+  //       second = ++this.windowCount;
   //     } else {
-  //       node = ++this.windowCount;
+  //       first = ++this.windowCount;
+  //       second = destination;
   //     }
 
-  //     return node;
-  //     //this.setState({ currentNode });
-  //     //this.currentNode = this.currentNode;
+  //     node = updateTree(node, [
+  //       {
+  //         path,
+  //         spec: {
+  //           $set: {
+  //             direction,
+  //             first,
+  //             second,
+  //           },
+  //         },
+  //       },
+  //     ]);
+  //   } else {
+  //     node = ++this.windowCount;
   //   }
 
+  //   return node;
+  //   //this.setState({ currentNode });
+  //   //this.currentNode = this.currentNode;
+  // }
+
   AddToTopRight() {
-    console.log(this.currentNode);
+    //let { currentNode: MosaicNode<Number> } = tss;
+    //console.log(this.currentNode);
     if (this.currentNode) {
       const path = getPathToCorner(this.currentNode, Corner.TOP_RIGHT);
       //console.log(path);
@@ -179,7 +180,6 @@ class MosaicPanel {
         [
           //path.concat("first")
           //path = [path, "first"];
-
           this.renderRecursively(node.first, first, path.concat("first")),
           //renderSplit(node.direction, boundingBox, splitPercentage, path),
           this.renderRecursively(node.second, second, path.concat("second")),
@@ -220,7 +220,7 @@ class MosaicPanel {
 }
 
 const mosaicPanel = new MosaicPanel(initNode);
-//console.log("ggg");
+
 // let panelMarkups: Array<MarkUps>;
 // panelMarkups = mosaicPanel.getPanelMmarkUps();
 

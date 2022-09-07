@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MosaicNodes } from "./stores/nodestores";
+  import { MosaicNodes } from "./stores/MosaicPanel";
 
   const onClickGithub = () => {
     window.open("https://github.com/champkim/mosaic_ex", "_blank");
