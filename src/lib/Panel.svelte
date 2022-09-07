@@ -1,257 +1,65 @@
 <script lang="ts">
-  import flatten from "lodash/flatten";
   import PanelTopBar from "./PanelTopBar.svelte";
-  import Split from "./Split.svelte";
-  import { BoundingBox } from "./util/BoundingBox";
-  import { isParent } from "./util/MosicUtils";
-  import type {
-    MosaicKey,
-    MosaicNode,
-    ResizeOptions,
-    MosaicParent,
-    MosaicBranch,
-  } from "./type/commonType";
+  import { MosaicNodes } from "./stores/nodestores";
+  import { onMount, onDestroy, beforeUpdate, afterUpdate } from "svelte";
+  import type { MarkUps } from "./type/commonType";
+  import { get } from "svelte/store";
 
-  //export let root: MosaicNode<number>;
+  beforeUpdate(() => {
+    // 반응성있는 값이 바뀔때 실행됨 (화면 렌더링 전 -> onMount보다 먼저 실행됨)
+    // 컴포넌트가 연결될때도 실행됨
+    // 반응성을 가지는 데이터가 beforeUpdate, afterUpdate 훅 내부에 있으면 무한루프 (useEffect에서 setState 사용하는 것과 같은 맥락), 꼭 넣어야한다면 조건문을 넣어서 무한루프에 빠지지 않도록
+    console.log("test before update");
+    //console.log('h1 && h1.innerText');
+  });
+  afterUpdate(() => {
+    // 반응성있는 값이 바뀔때 실행됨 (화면 렌더링 후 -> onMount 후에 실행됨)
+    // 컴포넌트가 연결될때도 실행됨
+    console.log("test after update");
+    let marks: Array<MarkUps>;
+    marks = get(MosaicNodes);
+    console.log(marks);
+  });
+  onMount(() => {
+    console.log("test onMount");
+    MosaicNodes.renderRecursively();
+    console.log(MosaicNodes);
+    // 컴포넌트 html 렌더링 된 이후에 실행됨
+    // 컴포넌트가 화면에 출력된 이후 사용하는 훅
+    //h1 = document.querySelector('h1');
+    //console.log("mounted", h1.innerText)
 
-  export let node: MosaicNode<number>;
-  export let boundingBox: BoundingBox = BoundingBox.empty();
-  export let path: MosaicBranch[];
+    // 반환함수를 넣으면 onDestory와 같은 기능 (onDestory가 먼저 실행되고 반환함수 실행됨)
+    // onDestory와 return 함수 둘중 하나만 만들어라
+    // 주의사항! onMount에서 비동기 함수 로직을 넣을 경우 async 함수의 리턴은 promise이므로 return 익명함수가 무시된다. 그래서 비동기 함수가 있는 경우에는 return 익명함수로 onDestory를 사용하지 말고 onDestory 훅을 이용해라
+    return () => {
+      console.log("test destory");
+    };
+  });
 
-  interface MarkUps {
-    style: string;
-    name: string;
-  }
-
-  let panelMarkups: Array<MarkUps> = [];
-  //panelMarkups = new Array<MarkUps>();
-
-  function nonNullElement(
-    x: MarkUps | Array<MarkUps> | null
-  ): x is MarkUps | Array<MarkUps> {
-    return x !== null;
-  }
-
-  // render() {
-  //   const { root } = this.props;
-  //   //console.log(<div className="mosaic-root">{this.renderRecursively(root, BoundingBox.empty(), [])}</div>);
-  //   return <div className="mosaic-root">{this.renderRecursively(root, BoundingBox.empty(), [])}</div>;
-  // }
-
-  function renderRecursively(
-    node: MosaicNode<number>,
-    boundingBox: BoundingBox,
-    path: MosaicBranch[]
-  ) {
-    //): MarkUps | Array<MarkUps> {
-    if (isParent(node)) {
-      const splitPercentage =
-        node.splitPercentage == null ? 50 : node.splitPercentage;
-      const { first, second } = BoundingBox.split(
-        boundingBox,
-        splitPercentage,
-        node.direction
-      );
-      return flatten(
-        [
-          //path.concat("first")
-          //path = [path, "first"];
-
-          renderRecursively(node.first, first, path.concat("first")),
-          //renderSplit(node.direction, boundingBox, splitPercentage, path),
-          renderRecursively(node.second, second, path.concat("second")),
-        ].filter(nonNullElement)
-      );
-    } else {
-      //let insetStr: string = `${node},  ${path}, ${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}% `;
-      //console.log(insetStr);
-      //console.log((...BoundingBox.asStyles(boundingBox)));
-
-      //insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `;
-
-      // let panelsMarkUp2 = `< class="panel" style="inset:${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}%">`;
-      // panelsMarkUp += `<PanelTopBar/> <div class="contents">Window ${node}</div>`;
-      // console.log(panelsMarkUp);
-
-      let markups: MarkUps = { style: "", name: "" };
-
-      markups.style = `${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}%`;
-      markups.name = `${node}`;
-
-      panelMarkups.push(markups);
-
-      // let panelsMarkUp = `{style: ${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}%,`;
-      // panelsMarkUp += `node:${node}}`;
-      // console.log(panelsMarkUp);
-
-      //return markups;
-      // return (
-      //   <div key={node} className="mosaic-tile" style={{ ...BoundingBox.asStyles(boundingBox) }}>
-      //     {this.props.renderTile(node, path)}
-      //   </div>
-      // );
-    }
-  }
-
-  renderRecursively(node, boundingBox, path);
-
-  console.log("ggggggggggggggggggggggg");
-  console.log(panelMarkups);
-
-  // let bParent: boolean = isParent(node);
-  // node = node as MosaicParent<number>;
-
-  // if (bParent) {
-  //   //path.concat("first");
-  //   //path.concat("second");
-  // }
-
-  // // let first: Split;
-  // // let second: Split;
-
-  // const splitPercentage =
-  //   node.splitPercentage == null ? 50 : node.splitPercentage;
-
-  // const { first, second } = BoundingBox.split(
-  //   boundingBox,
-  //   splitPercentage,
-  //   node.direction
-  // );
-
-  // // return flatten(
-  // //   [
-
-  ///////////////////////////////////////////////////////////
-  // this.renderRecursively(node.first, first, path.concat("first"));
-  // this.renderSplit(node.direction, boundingBox, splitPercentage, path);
-  // this.renderRecursively(node.second, second, path.concat("second"));
-  ///////////////////////////////////////////////////////////
-
-  //   ].filter(nonNullElement)
-  // );
-
-  //}
-
-  // else {
-  //setBoundBox = BoundingBox.asStyles(boundingBox);
-  // return (
-  //   <div
-  //     key={node}
-  //     className="mosaic-tile"
-  //     style={{ ...BoundingBox.asStyles(boundingBox) }}
-  //   >
-  //     {this.props.renderTile(node, path)}
-  //   </div>
-  // );
-  // }
-
-  //export let insetrec: insetrect = { top: 0, left: 0, bottom: 0, right: 0 };
-  //export let direction: direction
-
-  // const BASIC_PERCENT = 50;
-
-  // let insetStr: string = "0% 0% 0% 0%";
-  // insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `;
-
-  // console.log(
-  //   node +
-  //     " [first] " +
-  //     typeof node.first +
-  //     " [second] " +
-  //     typeof node.second +
-  //     " [direction] " +
-  //     node.direction +
-  //     " [inset arg] " +
-  //     insetStr
-  // );
-
-  // let insetrec1: insetrect = { top: 0, left: 0, bottom: 0, right: 0 };
-  // let insetrec2: insetrect = { top: 0, left: 0, bottom: 0, right: 0 };
-
-  // if (typeof node === "object") {
-  //   insetrec1 = { ...insetrec };
-  //   insetrec2 = { ...insetrec };
-  //   if (node.direction === "row") {
-  //     //if (typeof node.first === 'string') {
-  //     console.log("row");
-  //     insetrec1.right = Math.floor((100 - insetrec.right) / 2);
-  //     insetrec2.left = 100 - insetrec1.right;
-  //     //}
-  //   } else {
-  //     console.log("col");
-  //     insetrec1.bottom = Math.floor((100 - insetrec1.bottom) / 2);
-  //     insetrec2.top = 100 - insetrec1.bottom;
-  //   }
-  // }
+  onDestroy(() => {
+    // 컴포넌트가 연결해지되기 직전에 실행됨, 해지 직전이니 h1이 출력됨
+    //const h1 = document.querySelector('h1');
+    //console.log("destory", h1.innerText)
+    console.log("test destory real");
+  });
 </script>
 
 <!-- {@html slements}
 
 {#each slements as {mark} (id)}
 
-<div>{name}</div>
-{/each} -->
-
 <!-- {#each slements as item}
   {@html item}
 {/each} -->
 
-{#each panelMarkups as markup}
+{#each $MosaicNodes as markup}
   <div class="panel" style="inset:{markup.style}">
     <PanelTopBar />
     <div class="contents">Window {markup.name}</div>
   </div>
 {/each}
 
-<!-- <div
-    class="panel"
-    style="inset:{`${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}% `}"
-  >
-  <PanelTopBar />
-  <div class="contents">Window {node}</div>
-</div> -->
-
-<!-- style="inset:{`${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `}" -->
-
-<!-- {#if isParent(node)}
-  <svelte:self node={node.first} boundingBox={first} {path} />
-  <!-- {#if node.second}
-    <Split direction={node.direction} insetrec={insetrec2} />
-  {/if} 
-  <svelte:self node={node.second} boundingBox={second} {path} />
-{:else if typeof node === "number"}
-  <div
-    class="panel"
-    style="inset:{`${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}% `}"
-  >
-    <PanelTopBar />
-    <div class="contents">Window {node}</div>
-  </div>
-{/if} -->
-
-<!-- {#if typeof node === "number"}
-  <div
-    class="panel"
-    style="inset:{`${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}% `}"
-  >
-    <PanelTopBar />
-    <div class="contents">Window {node}</div>
-  </div>
-{:else if typeof node === "object"}
-  <svelte:self
-    node={node.first}
-    boundingBox={first}
-    path={path.concat("first")}
-  />
-  {#if node.second}
-    <Split direction={node.direction} insetrec={insetrec2} />
-  {/if}
-  <svelte:self
-    node={node.second}
-    boundingBox={second}
-    path={path.concat("second")}
-  />
-{/if} -->
 <style>
   .panel {
     background: #fefefe;

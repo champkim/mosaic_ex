@@ -1,74 +1,8 @@
 <script lang="ts">
-  import dropRight from "lodash/dropRight";
-  import type {
-    MosaicNode,
-    MosaicParent,
-    MosaicDirection,
-  } from "./type/commonType";
-  import {
-    Corner,
-    getPathToCorner,
-    getNodeAtPath,
-    getOtherDirection,
-    updateTree,
-  } from "./util/MosicUtils";
-  export let currentNode: MosaicNode<number>;
-
-  let windowCount = 3;
+  import { MosaicNodes } from "./stores/nodestores";
 
   const onClickGithub = () => {
     window.open("https://github.com/champkim/mosaic_ex", "_blank");
-  };
-
-  const onClickAddToTopRight = () => {
-    //let { currentNode } = this.state;
-    console.log(currentNode);
-    if (currentNode) {
-      const path = getPathToCorner(currentNode, Corner.TOP_RIGHT);
-      console.log(path);
-
-      const parent = getNodeAtPath(
-        currentNode,
-        dropRight(path)
-      ) as MosaicParent<number>;
-      //console.log("[parent] " + parent);
-      const destination = getNodeAtPath(
-        currentNode,
-        path
-      ) as MosaicNode<number>;
-      //console.log("[destination] " + destination);
-      const direction: MosaicDirection = parent
-        ? getOtherDirection(parent.direction)
-        : "row";
-      console.log("[direction] " + direction);
-
-      let first: MosaicNode<number>;
-      let second: MosaicNode<number>;
-      if (direction === "row") {
-        first = destination;
-        second = ++windowCount;
-      } else {
-        first = ++windowCount;
-        second = destination;
-      }
-
-      currentNode = updateTree(currentNode, [
-        {
-          path,
-          spec: {
-            $set: {
-              direction,
-              first,
-              second,
-            },
-          },
-        },
-      ]);
-    } else {
-      currentNode = ++windowCount;
-    }
-    //this.setState({ currentNode });
-    currentNode = currentNode;
   };
 </script>
 
@@ -76,7 +10,8 @@
   <div class="title">mosaic-ex</div>
   <div class="button-wrap">
     <button on:click>Auto Arrage</button>
-    <button on:click={onClickAddToTopRight}>Add Window to Top Right</button>
+    <button on:click={MosaicNodes.addToTopRight}>Add Window to Top Right</button
+    >
     <div on:click={onClickGithub} class="git-hub-logo" />
   </div>
 </div>
