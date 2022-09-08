@@ -1,16 +1,18 @@
 <script lang="ts">
-  import type { direction, insetrect } from './type/commonType'
-  export let direction: direction
-  export let insetrec: insetrect
+  import type { MosaicDirection } from "./type/commonType";
+  import type { BoundingBox } from "./util/BoundingBox";
 
-  let insetStr: string = '0% 0% 0% 0%'
-  insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `
-  console.log('[Split] ' + insetStr + '[direction] ' + direction)
+  export let direction: MosaicDirection;
+  export let boundbox: BoundingBox;
+
+  let insetStr: string = "0% 0% 0% 0%";
+  insetStr = `${boundbox.top}% ${boundbox.right}% ${boundbox.bottom}% ${boundbox.left}% `;
+  console.log("[Split] " + insetStr + "[direction] " + direction);
 </script>
 
 <div
   class="split {direction}"
-  style="inset: {`${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `}"
+  style="inset: {`${boundbox.top}% ${boundbox.right}% ${boundbox.bottom}% ${boundbox.left}% `}"
 />
 
 <style>

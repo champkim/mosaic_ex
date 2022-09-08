@@ -1,13 +1,15 @@
 <script lang="ts">
   import Panel from "./Panel.svelte";
-  import type { mosaic } from "./type/commonType";
-  export let mosaicData: mosaic;
 </script>
 
-<div class="mosaic" style="flex-direction:{mosaicData.direction}">
-  <Panel node={mosaicData} direction={mosaicData.direction} />
+<div class="mosaic" style="flex-direction:row">
+  <Panel />
 </div>
 
+<!-- <div class="mosaic" style="flex-direction:{mosaicData}">
+  <Panel node={mosaicData} />  
+</div> 
+-->
 <style>
   .mosaic {
     position: relative;
