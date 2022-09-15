@@ -7,6 +7,8 @@
   // import { get } from "svelte/store";
 
   onMount(()=>{
+    //renderRecursively 의 split target에 getElementeById는 돔 렌더링 후에 찾아져서
+    //onMount 안에서 실행해야함.
     MosaicNodes.renderRecursively();
   })
 

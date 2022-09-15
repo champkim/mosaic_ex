@@ -10,18 +10,19 @@
 
   let insetStr: string = "0% 0% 0% 0%";
   insetStr = `${boundbox.top}% ${boundbox.right}% ${boundbox.bottom}% ${boundbox.left}% `;
-  console.log("[Split] " + insetStr + "[direction] " + direction);
-
+  
   onMount(() => {
     function resize(e) {
       const parent = splitRef.parentElement.getBoundingClientRect();
-      // if (direction === "column") {
-      //   const percent = ((e.clientY - parent.top) / parent.height) * 100.0;
-      //   setInsetRec({ ...insetrec, left: percent });
-      // } else {
-      //   const percent = ((e.clientX - parent.left) / parent.width) * 100.0;
-      //   setInsetRec({ ...insetrec, top: percent });
-      // }
+      if (direction === "column") {
+        const percent = ((e.clientY - parent.top) / parent.height) * 100.0;
+        console.log(percent);
+        // setInsetRec({ ...insetrec, left: percent });
+      } else {
+        const percent = ((e.clientX - parent.left) / parent.width) * 100.0;
+        console.log(percent);
+        // setInsetRec({ ...insetrec, top: percent });
+      }
     }
 
     splitRef.addEventListener(
