@@ -1,24 +1,27 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { direction, insetrect } from "./type/commonType";
-  export let direction: direction;
-  export let insetrec: insetrect;
+  import type { MosaicDirection } from "./type/commonType";
+  import type { BoundingBox } from "./util/BoundingBox";
+
+  export let direction: MosaicDirection;
+  export let boundbox: BoundingBox;
   export let setInsetRec: Function;
   let splitRef;
 
-  $: insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `;
-  // console.log("[Split] " + insetStr + "[direction] " + direction);
+  let insetStr: string = "0% 0% 0% 0%";
+  insetStr = `${boundbox.top}% ${boundbox.right}% ${boundbox.bottom}% ${boundbox.left}% `;
+  console.log("[Split] " + insetStr + "[direction] " + direction);
 
   onMount(() => {
     function resize(e) {
       const parent = splitRef.parentElement.getBoundingClientRect();
-      if (direction === "column") {
-        const percent = ((e.clientY - parent.top) / parent.height) * 100.0;
-        setInsetRec({ ...insetrec, left: percent });
-      } else {
-        const percent = ((e.clientX - parent.left) / parent.width) * 100.0;
-        setInsetRec({ ...insetrec, top: percent });
-      }
+      // if (direction === "column") {
+      //   const percent = ((e.clientY - parent.top) / parent.height) * 100.0;
+      //   setInsetRec({ ...insetrec, left: percent });
+      // } else {
+      //   const percent = ((e.clientX - parent.left) / parent.width) * 100.0;
+      //   setInsetRec({ ...insetrec, top: percent });
+      // }
     }
 
     splitRef.addEventListener(
@@ -38,11 +41,7 @@
   });
 </script>
 
-<div
-  bind:this={splitRef}
-  class="split {direction}"
-  style="inset: {`${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}% `}"
-/>
+<div bind:this={splitRef} class="split {direction}" style="inset: {insetStr}" />
 
 <style>
   .split {

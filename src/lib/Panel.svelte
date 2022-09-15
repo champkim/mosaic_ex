@@ -1,64 +1,69 @@
 <script lang="ts">
-  import PanelTopBar from './PanelTopBar.svelte'
-  import Split from './Split.svelte'
-  import type { direction, mosaic, insetrect } from './type/commonType'
-  export let node: mosaic
-  export let insetrec: insetrect = { top: 0, left: 0, bottom: 0, right: 0 }
-  export let direction: direction
+  import { onMount } from "svelte";
+  import PanelTopBar from "./PanelTopBar.svelte";
+  import { MosaicNodes } from "./stores/MosaicPanel";
+  // import { onMount, onDestroy, beforeUpdate, afterUpdate } from "svelte";
+  // import type { MarkUps } from "./type/commonType";
+  // import { get } from "svelte/store";
 
-  let insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}%`;
+  onMount(()=>{
+    MosaicNodes.renderRecursively();
+  })
 
-  const setInsetRec = (newInsetrec) => {
-    insetrec = { ...newInsetrec };
-    insetStr = `${insetrec.top}% ${insetrec.right}% ${insetrec.bottom}% ${insetrec.left}%`;
-    console.log(insetStr);
-  };
-  if (typeof node === "string") console.log(insetrec, insetStr);
+  // beforeUpdate(() => {
+  //   // 반응성있는 값이 바뀔때 실행됨 (화면 렌더링 전 -> onMount보다 먼저 실행됨)
+  //   // 컴포넌트가 연결될때도 실행됨
+  //   // 반응성을 가지는 데이터가 beforeUpdate, afterUpdate 훅 내부에 있으면 무한루프 (useEffect에서 setState 사용하는 것과 같은 맥락), 꼭 넣어야한다면 조건문을 넣어서 무한루프에 빠지지 않도록
+  //   console.log("test before update");
+  //   //console.log('h1 && h1.innerText');
+  // });
+  // afterUpdate(() => {
+  //   // 반응성있는 값이 바뀔때 실행됨 (화면 렌더링 후 -> onMount 후에 실행됨)
+  //   // 컴포넌트가 연결될때도 실행됨
+  //   console.log("test after update");
+  //   let marks: Array<MarkUps>;
+  //   marks = get(MosaicNodes);
+  //   console.log(marks);
+  // });
+  // onMount(() => {
+  //   console.log("test onMount");
+  //   MosaicNodes.renderRecursively();
+  //   console.log(MosaicNodes);
+  //   // 컴포넌트 html 렌더링 된 이후에 실행됨
+  //   // 컴포넌트가 화면에 출력된 이후 사용하는 훅
+  //   //h1 = document.querySelector('h1');
+  //   //console.log("mounted", h1.innerText)
 
-  console.log(
-    node +
-      ' [first] ' +
-      typeof node.first +
-      ' [second] ' +
-      typeof node.second +
-      ' [direction] ' +
-      node.direction +
-      ' [inset arg] ' +
-      insetStr
-  )
+  //   // 반환함수를 넣으면 onDestory와 같은 기능 (onDestory가 먼저 실행되고 반환함수 실행됨)
+  //   // onDestory와 return 함수 둘중 하나만 만들어라
+  //   // 주의사항! onMount에서 비동기 함수 로직을 넣을 경우 async 함수의 리턴은 promise이므로 return 익명함수가 무시된다. 그래서 비동기 함수가 있는 경우에는 return 익명함수로 onDestory를 사용하지 말고 onDestory 훅을 이용해라
+  //   return () => {
+  //     console.log("test destory");
+  //   };
+  // });
 
-  let insetrec1: insetrect = { top: 0, left: 0, bottom: 0, right: 0 }
-  let insetrec2: insetrect = { top: 0, left: 0, bottom: 0, right: 0 }
-
-  if (typeof node === 'object') {
-    insetrec1 = { ...insetrec }
-    insetrec2 = { ...insetrec }
-    if (node.direction === 'row') {
-      //if (typeof node.first === 'string') {
-      console.log('row')
-      insetrec1.right = Math.floor((100 - insetrec.right) / 2)
-      insetrec2.left = 100 - insetrec1.right
-      //}
-    } else {
-      console.log('col')
-      insetrec1.bottom = Math.floor((100 - insetrec1.bottom) / 2)
-      insetrec2.top = 100 - insetrec1.bottom
-    }
-  }
+  // onDestroy(() => {
+  //   // 컴포넌트가 연결해지되기 직전에 실행됨, 해지 직전이니 h1이 출력됨
+  //   //const h1 = document.querySelector('h1');
+  //   //console.log("destory", h1.innerText)
+  //   console.log("test destory real");
+  // });
 </script>
 
-{#if typeof node === "string"}
-  <div class="panel" style="inset:{insetStr}">
+<!-- {@html slements}
+
+{#each slements as {mark} (id)}
+
+<!-- {#each slements as item}
+  {@html item}
+{/each} -->
+
+{#each $MosaicNodes as markup}
+  <div class="panel" style="inset:{markup.style}">
     <PanelTopBar />
-    <div class="contents">Window {node}</div>
+    <div class="contents">Window {markup.name}</div>
   </div>
-{:else if typeof node === "object"}
-  <svelte:self node={node.first} insetrec={insetrec1} />
-  {#if node.second}
-    <Split direction={node.direction} insetrec={insetrec2} {setInsetRec} />
-  {/if}
-  <svelte:self node={node.second} insetrec={insetrec2} />
-{/if}
+{/each}
 
 <style>
   .panel {
