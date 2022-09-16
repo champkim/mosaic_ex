@@ -5,7 +5,7 @@
 
   export let direction: MosaicDirection;
   export let boundbox: BoundingBox;
-  export let setInsetRec: Function;
+  export let onResize: Function;
   let splitRef;
 
   let insetStr: string = "0% 0% 0% 0%";
@@ -18,9 +18,11 @@
         const percent = ((e.clientY - parent.top) / parent.height) * 100.0;
         console.log(percent);
         // setInsetRec({ ...insetrec, left: percent });
+        onResize(percent)
       } else {
         const percent = ((e.clientX - parent.left) / parent.width) * 100.0;
         console.log(percent);
+        onResize(percent)
         // setInsetRec({ ...insetrec, top: percent });
       }
     }

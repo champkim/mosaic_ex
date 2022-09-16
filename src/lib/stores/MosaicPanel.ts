@@ -152,6 +152,24 @@ class MosaicPanel {
     //this.currentNode = this.currentNode;
   }
 
+  onResize(percentage: number) {
+    console.log(this);
+    if (this.currentNode) {
+      const path = getPathToCorner(this.currentNode, Corner.TOP_RIGHT);
+      this.currentNode = updateTree(this.currentNode, [
+        {
+          path,
+          spec: {
+            splitPercentage: {
+              $set: percentage,
+            },
+          },
+        },
+      ]);
+    }
+  }
+
+
   onAddToTopRight(): Array<MarkUps> {
     this.AddToTopRight();
     return this.onRenderRecursively();
@@ -184,7 +202,11 @@ class MosaicPanel {
           this.renderRecursively(node.first, first, path.concat("first")),
           new Split({
             target: document.getElementById("mosaic"),
-            props: { boundbox: second, direction: node.direction },
+            props: {
+              boundbox: second,
+              direction: node.direction,
+              onResize: mosaicPanel.onResize,
+            },
           }),
           this.renderRecursively(node.second, second, path.concat("second")),
         ].filter(nonNullElement)
