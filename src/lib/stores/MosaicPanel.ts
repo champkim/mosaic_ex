@@ -46,6 +46,11 @@ class MosaicPanel {
     this.currentNode = node;
   }
 
+  setCurrentNode(node) {
+    this.currentNode = node;
+    return this.onRenderRecursively()
+  }
+
   getPanelMmarkUps(): Array<MarkUps> {
     return this.panelMarkups;
   }
@@ -158,6 +163,7 @@ class MosaicPanel {
 
   onRenderRecursively(): Array<MarkUps> {
     this.panelMarkups = [];
+    console.log(this.currentNode)
     this.renderRecursively(this.currentNode, this.boundingBox, this.path);
     return this.panelMarkups;
   }
@@ -213,7 +219,7 @@ class MosaicPanel {
       subscribe,
       renderRecursively: () => update(() => this.onRenderRecursively()),
       addToTopRight: () => update(() => this.onAddToTopRight()),
-
+      setCurrentNode: (node) => update(() => this.setCurrentNode(node))
       //let { currentNode } = this.state;
     };
   }
