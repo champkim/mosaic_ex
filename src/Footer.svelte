@@ -22,8 +22,10 @@
   };
 
   const onClickButton = (number: number) => {
-    active = number;
-    MosaicNodes.setCurrentNode(initNode);
+    if (active !== number) {
+      active = number;
+      MosaicNodes.setCurrentNode(initNode);
+    }
   };
 
   onMount(async () => {
@@ -35,9 +37,16 @@
   });
 
   const onUpdateProfile = async () => {
-    try {
-      const response = await axios.put("/pages");
-    } catch (error) {}
+    if (active === 0) {
+      alert("default는 수정할 수 없습니다.");
+      return;
+    }
+    if (confirm("저장하시겠습니까?")) {
+      try {
+        console.log(MosaicNodes.getCurrentNode());
+        const response = await axios.put("/pages");
+      } catch (error) {}
+    }
   };
 </script>
 
@@ -45,6 +54,7 @@
   {#each array as name}
     <button
       on:click={() => onClickButton(name)}
+      on:dblclick={onUpdateProfile}
       class={`button-num ${active === name ? "active" : ""}`}
       >{name === 0 ? "Default" : name}</button
     >
