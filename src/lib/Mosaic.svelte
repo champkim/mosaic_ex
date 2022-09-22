@@ -15,7 +15,7 @@
     position: relative;
     display: block;
     width: calc(100% - 8px);
-    height: calc(100% - 56px);
+    height: calc(100% - 56px - 40px);
     padding: 4px;
     background: #636363;
     display: flex;

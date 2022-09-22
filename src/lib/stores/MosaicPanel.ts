@@ -20,14 +20,14 @@ import { isParent } from "../util/MosicUtils";
 import Split from "../Split.svelte";
 
 let initNode: MosaicNode<number> = {
-  direction: "row",
-  first: 1,
-  //second: 'b'
-  second: {
-    direction: "column",
-    first: 2,
-    second: 3,
-  },
+  // direction: "row",
+  // first: 1,
+  // second: 'b'
+  // second: {
+  //   direction: "column",
+  //   first: 2,
+  //   second: 3,
+  // },
 };
 
 function nonNullElement(
@@ -45,6 +45,11 @@ class MosaicPanel {
 
   constructor(node) {
     this.currentNode = node;
+  }
+
+  setCurrentNode(node) {
+    this.currentNode = node;
+    return this.onRenderRecursively();
   }
 
   getPanelMmarkUps(): Array<MarkUps> {
@@ -177,6 +182,7 @@ class MosaicPanel {
 
   onRenderRecursively(): Array<MarkUps> {
     this.panelMarkups = [];
+    console.log(this.currentNode);
     this.renderRecursively(this.currentNode, this.boundingBox, this.path);
     return this.panelMarkups;
   }
@@ -234,13 +240,15 @@ class MosaicPanel {
 
   createNodes() {
     const { subscribe, set, update } = writable(this.panelMarkups);
+    const { subscribe: subscribe2 } = writable(this.currentNode);
 
     return {
       subscribe,
       renderRecursively: () => update(() => this.onRenderRecursively()),
       addToTopRight: () => update(() => this.onAddToTopRight()),
-
+      setCurrentNode: (node) => update(() => this.setCurrentNode(node)),
       //let { currentNode } = this.state;
+      getCurrentNode: () => this.currentNode,
     };
   }
 }

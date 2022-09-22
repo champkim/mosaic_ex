@@ -63,7 +63,7 @@
 {#each $MosaicNodes as markup}
   <div class="panel" style="inset:{markup.style}">
     <PanelTopBar />
-    <div class="contents">Window {markup.name}</div>
+    <div class="contents">Window {markup.name || 1}</div>
   </div>
 {/each}
 
