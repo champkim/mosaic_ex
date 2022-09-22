@@ -2,35 +2,37 @@
   import { onMount } from "svelte";
   import axios from "axios";
   import { MosaicNodes } from "./lib/stores/MosaicPanel";
+  import type { MosaicNode } from "./lib/type/commonType";
 
-  let array: number[] = [0, 1, 2, 3, 4, 5];
-  let active = 0;
-
-  let initNode = {
+  const initNode: MosaicNode<number> = {
     direction: "row",
     first: 1,
-    //second: 'b'
-    second: {
-      direction: "column",
-      first: 2,
-      second: {
-        direction: "column",
-        first: 3,
-        second: 5,
-      },
-    },
+    second: 2,
   };
+
+  let array: number[] = [0, 1, 2, 3, 4, 5];
+  let profileList: { contents: MosaicNode<number>; index: number }[] = [];
+  let active = 0;
 
   const onClickButton = (number: number) => {
     if (active !== number) {
       active = number;
-      MosaicNodes.setCurrentNode(initNode);
+      MosaicNodes.setCurrentNode(profileList[number].contents);
     }
   };
 
   onMount(async () => {
+    // await axios.delete("http://127.0.0.1:3000/pages")
+
     try {
-      const response = await axios.get("/pages");
+      const response = await axios.get("http://127.0.0.1:3000/pages");
+      profileList = new Array(6);
+      profileList = profileList.fill({ contents: initNode, index: -1 });
+      response.data.forEach(({ contents, index }) => {
+        profileList[index] = { index, contents: JSON.parse(contents) };
+      });
+
+      MosaicNodes.setCurrentNode(profileList[0].contents);
     } catch (error) {
       console.log(error);
     }
@@ -42,9 +44,21 @@
       return;
     }
     if (confirm("저장하시겠습니까?")) {
+      const data = [
+        {
+          index: active,
+          contents: JSON.stringify(MosaicNodes.getCurrentNode()),
+        },
+      ];
+      const apiMethod = profileList[active].index === -1 ? "post" : "put";
       try {
-        console.log(MosaicNodes.getCurrentNode());
-        const response = await axios.put("/pages");
+        const options = {
+          url: "http://127.0.0.1:3000/pages",
+          method: apiMethod,
+          data,
+        };
+        const response = await axios(options);
+        profileList[active].contents = MosaicNodes.getCurrentNode();
       } catch (error) {}
     }
   };

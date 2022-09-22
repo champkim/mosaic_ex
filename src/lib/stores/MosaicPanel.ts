@@ -19,14 +19,14 @@ import { BoundingBox } from "../util/BoundingBox";
 import { isParent } from "../util/MosicUtils";
 
 let initNode: MosaicNode<number> = {
-  direction: "row",
-  first: 1,
-  //second: 'b'
-  second: {
-    direction: "column",
-    first: 2,
-    second: 3,
-  },
+  // direction: "row",
+  // first: 1,
+  // second: 'b'
+  // second: {
+  //   direction: "column",
+  //   first: 2,
+  //   second: 3,
+  // },
 };
 
 function nonNullElement(
