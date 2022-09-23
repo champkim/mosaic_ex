@@ -1,11 +1,16 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import PanelTopBar from "./PanelTopBar.svelte";
   import { MosaicNodes } from "./stores/MosaicPanel";
   // import { onMount, onDestroy, beforeUpdate, afterUpdate } from "svelte";
   // import type { MarkUps } from "./type/commonType";
   // import { get } from "svelte/store";
 
-  MosaicNodes.renderRecursively();
+  onMount(()=>{
+    //renderRecursively 의 split target에 getElementeById는 돔 렌더링 후에 찾아져서
+    //onMount 안에서 실행해야함.
+    MosaicNodes.renderRecursively();
+  })
 
   // beforeUpdate(() => {
   //   // 반응성있는 값이 바뀔때 실행됨 (화면 렌더링 전 -> onMount보다 먼저 실행됨)

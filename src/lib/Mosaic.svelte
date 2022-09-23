@@ -2,7 +2,7 @@
   import Panel from "./Panel.svelte";
 </script>
 
-<div class="mosaic" style="flex-direction:row">
+<div id="mosaic" class="mosaic" style="flex-direction:row">
   <Panel />
 </div>
 
