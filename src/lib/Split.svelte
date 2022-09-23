@@ -1,30 +1,28 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { MosaicNodes } from "./stores/MosaicPanel";
   import type { MosaicDirection } from "./type/commonType";
   import type { BoundingBox } from "./util/BoundingBox";
 
   export let direction: MosaicDirection;
   export let boundbox: BoundingBox;
-  export let onResize: Function;
+  export let path: string[];
+
   let splitRef;
 
   let insetStr: string = "0% 0% 0% 0%";
   insetStr = `${boundbox.top}% ${boundbox.right}% ${boundbox.bottom}% ${boundbox.left}% `;
-  
+
   onMount(() => {
     function resize(e) {
       const parent = splitRef.parentElement.getBoundingClientRect();
+      let percent = 0;
       if (direction === "column") {
-        const percent = ((e.clientY - parent.top) / parent.height) * 100.0;
-        console.log(percent);
-        // setInsetRec({ ...insetrec, left: percent });
-        onResize(percent)
+        percent = ((e.clientY - parent.top) / parent.height) * 100.0;
       } else {
-        const percent = ((e.clientX - parent.left) / parent.width) * 100.0;
-        console.log(percent);
-        onResize(percent)
-        // setInsetRec({ ...insetrec, top: percent });
+        percent = ((e.clientX - parent.left) / parent.width) * 100.0;
       }
+      if (percent > 20 && percent < 80) MosaicNodes.onResize(path, percent);
     }
 
     splitRef.addEventListener(
@@ -38,6 +36,7 @@
       "mouseup",
       function () {
         document.removeEventListener("mousemove", resize, false);
+        splitRef.removeEventListener("mousemove", resize, false);
       },
       false
     );
