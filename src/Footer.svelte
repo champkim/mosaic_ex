@@ -25,7 +25,7 @@
     // await axios.delete("http://127.0.0.1:3000/pages")
 
     try {
-      const response = await axios.get("http://127.0.0.1:3000/pages");
+      const response = await axios.get("http://192.168.0.6:3000/pages");
       profileList = new Array(6);
       profileList = profileList.fill({ contents: initNode, index: -1 });
       response.data.forEach(({ contents, index }) => {
@@ -53,7 +53,7 @@
       const apiMethod = profileList[active].index === -1 ? "post" : "put";
       try {
         const options = {
-          url: "http://127.0.0.1:3000/pages",
+          url: "http://192.168.0.6:3000/pages",
           method: apiMethod,
           data,
         };
