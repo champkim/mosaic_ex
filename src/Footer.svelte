@@ -17,26 +17,25 @@
   const onClickButton = (number: number) => {
     if (active !== number) {
       active = number;
-      MosaicNodes.setCurrentNode(profileList[number].contents);
+      getPageDataById(number);
     }
   };
 
-  onMount(async () => {
-    // await axios.delete("http://127.0.0.1:3000/pages")
-
+  const getPageDataById = async (id) => {
     try {
-      const response = await axios.get("http://ontune.iptime.org:2001/pages");
-      profileList = new Array(6);
-      profileList = profileList.fill({ contents: initNode, index: -1 });
-      response.data.forEach(({ contents, index }) => {
-        profileList[index] = { index, contents: JSON.parse(contents) };
-      });
-
-      MosaicNodes.setCurrentNode(profileList[0].contents);
+      const {
+        data: { index, contents },
+      } = await axios.get(`${import.meta.env.VITE_API_URL}/pages/${id}`);
+      const parseContents = JSON.parse(contents);
+      profileList[index] = { index, contents: parseContents };
+      MosaicNodes.setCurrentNode(parseContents);
     } catch (error) {
+      MosaicNodes.setCurrentNode(initNode);
       console.log(error);
     }
-  });
+  };
+
+  onMount(async () => await getPageDataById(0));
 
   const onUpdateProfile = async () => {
     if (active === 0) {
@@ -50,15 +49,14 @@
           contents: JSON.stringify(MosaicNodes.getCurrentNode()),
         },
       ];
-      const apiMethod = profileList[active].index === -1 ? "post" : "put";
+      const apiMethod = profileList[active].index === -1 ? "put" : "put";
       try {
         const options = {
-          url: "http://ontune.iptime.org:2001/pages",
+          url: `${import.meta.env.VITE_API_URL}/pages`,
           method: apiMethod,
           data,
         };
         const response = await axios(options);
-        profileList[active].contents = MosaicNodes.getCurrentNode();
       } catch (error) {}
     }
   };
