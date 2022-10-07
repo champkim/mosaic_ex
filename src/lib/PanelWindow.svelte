@@ -1,10 +1,12 @@
 <script lang="ts">
+  export let name;
+
   function splitWindowClick() {
-    alert('split Window')
+    alert("split Window");
   }
 
   function closeWindowClick() {
-    alert('close Window')
+    alert("close Window");
   }
 </script>
 
@@ -15,6 +17,8 @@
     <button on:click={closeWindowClick}>-</button>
   </div>
 </div>
+
+<div class="contents">Window {name || 1}</div>
 
 <style>
   .panel-topbar {

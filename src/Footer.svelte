@@ -4,11 +4,15 @@
   import { MosaicNodes } from "./lib/stores/MosaicPanel";
   import type { MosaicNode } from "./lib/type/commonType";
 
-  const initNode: MosaicNode<number> = {
-    direction: "row",
-    first: 1,
-    second: 2,
-  };
+  const pagesurl = "http://127.0.0.1:3000/pages";
+  //const pagesurl = "http://192.168.0.6:2001/pages";
+
+  // const initNode: MosaicNode<number> = {
+  //   direction: "row",
+  //   first: 1,
+  //   second: 2,
+  // };
+  const initNode: MosaicNode<number> = null;
 
   let array: number[] = [0, 1, 2, 3, 4, 5];
   let profileList: { contents: MosaicNode<number>; index: number }[] = [];
@@ -25,14 +29,16 @@
     // await axios.delete("http://127.0.0.1:3000/pages")
 
     try {
-      const response = await axios.get("http://127.0.0.1:3000/pages");
+      const response = await axios.get(pagesurl);
       profileList = new Array(6);
       profileList = profileList.fill({ contents: initNode, index: -1 });
       response.data.forEach(({ contents, index }) => {
         profileList[index] = { index, contents: JSON.parse(contents) };
+        console.log(index + " >>>> " + contents);
       });
 
       MosaicNodes.setCurrentNode(profileList[0].contents);
+      console.log(" >>>> " + profileList[0].contents);
     } catch (error) {
       console.log(error);
     }
@@ -53,7 +59,7 @@
       const apiMethod = profileList[active].index === -1 ? "post" : "put";
       try {
         const options = {
-          url: "http://127.0.0.1:3000/pages",
+          url: pagesurl,
           method: apiMethod,
           data,
         };

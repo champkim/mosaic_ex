@@ -1,5 +1,6 @@
 import get from "lodash/get";
 import set from "lodash/set";
+import clone from 'lodash/clone';
 //import update from "svelte-Splitpanes";
 import update from "immutability-helper";
 
@@ -106,5 +107,60 @@ export function getNodeAtPath<T extends MosaicKey>(
     return get(tree, path, null);
   } else {
     return tree;
+  }
+}
+
+export function getLeaves<T extends MosaicKey>(tree: MosaicNode<T> | null): T[] {
+  if (tree == null) {
+    return [];
+  } else if (isParent(tree)) {
+    return getLeaves(tree.first).concat(getLeaves(tree.second));
+  } else {
+    return [tree];
+  }
+}
+
+export function createBalancedTreeFromLeaves<T extends MosaicKey>(
+  leaves: MosaicNode<T>[],
+  startDirection: MosaicDirection = 'row',
+): MosaicNode<T> | null {
+  if (leaves.length === 0) {
+    return null;
+  }
+
+  let current: MosaicNode<T>[] = clone(leaves);
+  let next: MosaicNode<T>[] = [];
+
+  while (current.length > 1) {
+    while (current.length > 0) {
+      if (current.length > 1) {
+        next.push({
+          direction: 'row',
+          first: current.shift()!,
+          second: current.shift()!,
+        });
+      } else {
+        next.unshift(current.shift()!);
+      }
+    }
+    current = next;
+    next = [];
+  }
+  return alternateDirection(current[0], startDirection);
+}
+
+function alternateDirection<T extends MosaicKey>(
+  node: MosaicNode<T>,
+  direction: MosaicDirection = 'row',
+): MosaicNode<T> {  
+  if (isParent(node)) {
+    const nextDirection = getOtherDirection(direction);
+    return {
+      direction,
+      first: alternateDirection(node.first, nextDirection),
+      second: alternateDirection(node.second, nextDirection),
+    };
+  } else {
+    return node;
   }
 }

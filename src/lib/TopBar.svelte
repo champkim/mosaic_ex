@@ -9,7 +9,7 @@
 <div class="top-bar">
   <div class="title">mosaic-ex</div>
   <div class="button-wrap">
-    <button on:click>Auto Arrage</button>
+    <button on:click={MosaicNodes.autoArrange}>Auto Arrage</button>
     <button on:click={MosaicNodes.addToTopRight}>Add Window to Top Right</button
     >
     <div on:click={onClickGithub} class="git-hub-logo" />

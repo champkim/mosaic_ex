@@ -71,3 +71,11 @@ export interface MarkUps {
   style: string;
   name: string;
 }
+
+export interface EnabledResizeOptions {
+  minimumPaneSizePercentage?: number; // Default: 20
+}
+
+
+
+//export type TileRenderer<T extends MosaicKey> = (t: T, path: MosaicBranch[]) = svelte.JSX; // JSX.Element;
