@@ -13,6 +13,8 @@
   let array: number[] = [0, 1, 2, 3, 4, 5];
   let profileList: { contents: MosaicNode<number>; index: number }[] = [];
   let active = 0;
+  let beURL = "http://127.0.0.1:3000/pages";
+  //let beURL = "http://ontune.iptime.org:2001/pages"
 
   const onClickButton = (number: number) => {
     if (active !== number) {
@@ -25,7 +27,7 @@
     // await axios.delete("http://127.0.0.1:3000/pages")
 
     try {
-      const response = await axios.get("http://ontune.iptime.org:2001/pages");
+      const response = await axios.get(beURL);
       profileList = new Array(6);
       profileList = profileList.fill({ contents: initNode, index: -1 });
       response.data.forEach(({ contents, index }) => {
@@ -53,7 +55,7 @@
       const apiMethod = profileList[active].index === -1 ? "post" : "put";
       try {
         const options = {
-          url: "http://ontune.iptime.org:2001/pages",
+          url: beURL,
           method: apiMethod,
           data,
         };
