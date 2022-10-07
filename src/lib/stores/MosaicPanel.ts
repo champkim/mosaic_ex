@@ -30,7 +30,7 @@ function nonNullElement(
 
 class MosaicPanel {
   private currentNode: MosaicNode<number>;
-  private windowCount: number = 3;
+  private windowCount: number = 2;
   private boundingBox: BoundingBox = BoundingBox.empty();
   private path: MosaicBranch[] = [];
   private panelMarkups: Array<MarkUps> = [];
