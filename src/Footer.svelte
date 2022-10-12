@@ -15,34 +15,34 @@
   const initNode: MosaicNode<number> = null;
 
   let array: number[] = [0, 1, 2, 3, 4, 5];
-  let profileList: { contents: MosaicNode<number>; index: number }[] = [];
+  let profileList: { contents: MosaicNode<number>; index: number }[];
+  profileList = new Array(6);
+  profileList = profileList.fill({ contents: initNode, index: -1 });
   let active = 0;
+  //let beURL = "http://ontune.iptime.org:2001/pages"
 
   const onClickButton = (number: number) => {
     if (active !== number) {
       active = number;
-      MosaicNodes.setCurrentNode(profileList[number].contents);
+      getPageDataById(number);
     }
   };
 
-  onMount(async () => {
-    // await axios.delete("http://127.0.0.1:3000/pages")
-
+  const getPageDataById = async (id) => {
     try {
-      const response = await axios.get(pagesurl);
-      profileList = new Array(6);
-      profileList = profileList.fill({ contents: initNode, index: -1 });
-      response.data.forEach(({ contents, index }) => {
-        profileList[index] = { index, contents: JSON.parse(contents) };
-        console.log(index + " >>>> " + contents);
-      });
-
-      MosaicNodes.setCurrentNode(profileList[0].contents);
-      console.log(" >>>> " + profileList[0].contents);
+      const {
+        data: { index, contents },
+      } = await axios.get(`${import.meta.env.VITE_API_URL}/pages/${id}`);
+      const parseContents = JSON.parse(contents);
+      profileList[index] = { index, contents: parseContents };
+      MosaicNodes.setCurrentNode(parseContents);
     } catch (error) {
+      MosaicNodes.setCurrentNode(initNode);
       console.log(error);
     }
-  });
+  };
+
+  onMount(async () => await getPageDataById(0));
 
   const onUpdateProfile = async () => {
     if (active === 0) {
@@ -56,16 +56,23 @@
           contents: JSON.stringify(MosaicNodes.getCurrentNode()),
         },
       ];
+
       const apiMethod = profileList[active].index === -1 ? "post" : "put";
+      console.log("METHOD" + apiMethod);
       try {
         const options = {
-          url: pagesurl,
+          // <<<<<<< HEAD
+          //           url: beURL,
+          // =======
+          url: `${import.meta.env.VITE_API_URL}/pages`,
+          // >>>>>>> abb14fb78f00f7c59a31abadc706eb3774abbd52
           method: apiMethod,
           data,
         };
         const response = await axios(options);
-        profileList[active].contents = MosaicNodes.getCurrentNode();
-      } catch (error) {}
+      } catch (error) {
+        console.log("에러" + error);
+      }
     }
   };
 </script>
