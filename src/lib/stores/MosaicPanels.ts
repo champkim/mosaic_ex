@@ -226,7 +226,7 @@ class MosaicPanel implements AppState {
   //   return Promise.resolve(createNode!(...args)).then((node) => mosaicActions.replaceWith(path, node));
   // };
 
-  createNodes() {
+  createPanels() {
     const { subscribe, set, update } = writable(this.panelMarkups);
 
     return {
@@ -244,4 +244,4 @@ class MosaicPanel implements AppState {
 
 const mosaicPanel = new MosaicPanel();
 
-export const MosaicPanels = mosaicPanel.createNodes();
+export const MosaicPanels = mosaicPanel.createPanels();

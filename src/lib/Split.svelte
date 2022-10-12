@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { MosaicPanels } from "./stores/MosaicPanel";
+  import { MosaicPanels } from "./stores/MosaicPanels";
   import type { MosaicDirection } from "./type/commonType";
   import type { BoundingBox } from "./util/BoundingBox";
 
