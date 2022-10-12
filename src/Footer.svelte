@@ -26,22 +26,12 @@
 
   const getPageDataById = async (id) => {
     try {
-      //   const response = await axios.get(beURL);
-      //   profileList = new Array(6);
-      //   profileList = profileList.fill({ contents: initNode, index: -1 });
-      //   response.data.forEach(({ contents, index }) => {
-      //     profileList[index] = { index, contents: JSON.parse(contents) };
-      //   });
-
-      //   MosaicNodes.setCurrentNode(profileList[0].contents);
-      // =======
       const {
         data: { index, contents },
       } = await axios.get(`${import.meta.env.VITE_API_URL}/pages/${id}`);
       const parseContents = JSON.parse(contents);
       profileList[index] = { index, contents: parseContents };
       MosaicNodes.setCurrentNode(parseContents);
-      // >>>>>>> abb14fb78f00f7c59a31abadc706eb3774abbd52
     } catch (error) {
       MosaicNodes.setCurrentNode(initNode);
       console.log(error);
@@ -62,6 +52,7 @@
           contents: JSON.stringify(MosaicNodes.getCurrentNode()),
         },
       ];
+
       const apiMethod = profileList[active].index === -1 ? "post" : "put";
       console.log("METHOD" + apiMethod);
       try {
