@@ -1,18 +1,18 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import axios from "axios";
-  import { MosaicNodes } from "./lib/stores/MosaicPanel";
+  import { MosaicPanels } from "./lib/stores/MosaicPanel";
   import type { MosaicNode } from "./lib/type/commonType";
 
-  const pagesurl = "http://127.0.0.1:3000/pages";
+  //const pagesurl = "http://127.0.0.1:3000/pages";
   //const pagesurl = "http://192.168.0.6:2001/pages";
 
-  // const initNode: MosaicNode<number> = {
-  //   direction: "row",
-  //   first: 1,
-  //   second: 2,
-  // };
-  const initNode: MosaicNode<number> = null;
+  const initNode: MosaicNode<number> = {
+    direction: "row",
+    first: 1,
+    second: 2,
+  };
+  // const initNode: MosaicNode<number> = null;
 
   let array: number[] = [0, 1, 2, 3, 4, 5];
   let profileList: { contents: MosaicNode<number>; index: number }[];
@@ -35,9 +35,9 @@
       } = await axios.get(`${import.meta.env.VITE_API_URL}/pages/${id}`);
       const parseContents = JSON.parse(contents);
       profileList[index] = { index, contents: parseContents };
-      MosaicNodes.setCurrentNode(parseContents);
+      MosaicPanels.setCurrentNode(parseContents);
     } catch (error) {
-      MosaicNodes.setCurrentNode(initNode);
+      MosaicPanels.setCurrentNode(initNode);
       console.log(error);
     }
   };
@@ -53,7 +53,7 @@
       const data = [
         {
           index: active,
-          contents: JSON.stringify(MosaicNodes.getCurrentNode()),
+          contents: JSON.stringify(MosaicPanels.getCurrentNode()),
         },
       ];
 

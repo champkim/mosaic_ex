@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MosaicNodes } from "./stores/MosaicPanel";
+  import { MosaicPanels } from "./stores/MosaicPanel";
 
   const onClickGithub = () => {
     window.open("https://github.com/champkim/mosaic_ex", "_blank");
@@ -9,8 +9,9 @@
 <div class="top-bar">
   <div class="title">mosaic-ex</div>
   <div class="button-wrap">
-    <button on:click={MosaicNodes.autoArrange}>Auto Arrage</button>
-    <button on:click={MosaicNodes.addToTopRight}>Add Window to Top Right</button
+    <button on:click={MosaicPanels.autoArrange}>Auto Arrage</button>
+    <button on:click={MosaicPanels.addToTopRight}
+      >Add Window to Top Right</button
     >
     <div on:click={onClickGithub} class="git-hub-logo" />
   </div>

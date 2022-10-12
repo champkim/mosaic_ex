@@ -1,9 +1,16 @@
 <script lang="ts">
   import Panel from "./Panel.svelte";
+  import PanelWindow from "./PanelWindow.svelte";
+  import { MosaicPanels } from "./stores/MosaicPanel";
 </script>
 
 <div id="mosaic" class="mosaic" style="flex-direction:row">
-  <Panel />
+  {#each $MosaicPanels as markup}
+    <div class="panel" style="inset:{markup.style}">
+      <PanelWindow name={markup.name} />
+      <!-- <div class="contents">Window {markup.name || 1}</div> -->
+    </div>
+  {/each}
 </div>
 
 <!-- <div class="mosaic" style="flex-direction:{mosaicData}">
@@ -11,6 +18,14 @@
 </div> 
 -->
 <style>
+  .panel {
+    background: #fefefe;
+    border: 1px solid #636363;
+    margin: 3px;
+    border-radius: 4px;
+    position: absolute;
+  }
+
   .mosaic {
     position: relative;
     display: block;

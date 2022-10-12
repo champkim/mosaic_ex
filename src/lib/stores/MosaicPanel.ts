@@ -1,8 +1,6 @@
 import { writable } from "svelte/store";
 import flatten from "lodash/flatten";
 import dropRight from "lodash/dropRight";
-import { SvelteComponentTyped } from "svelte";
-import type { ComponentConstructorOptions } from "svelte";
 import { v4 as uuid } from "uuid";
 import type {
   MosaicKey,
@@ -246,4 +244,4 @@ class MosaicPanel implements AppState {
 
 const mosaicPanel = new MosaicPanel();
 
-export const MosaicNodes = mosaicPanel.createNodes();
+export const MosaicPanels = mosaicPanel.createNodes();

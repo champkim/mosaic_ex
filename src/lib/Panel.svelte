@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import PanelWindow from "./PanelWindow.svelte";
-  import { MosaicNodes } from "./stores/MosaicPanel";
+  import { MosaicPanels } from "./stores/MosaicPanel";
   // import { onMount, onDestroy, beforeUpdate, afterUpdate } from "svelte";
   // import type { MarkUps } from "./type/commonType";
   // import { get } from "svelte/store";
@@ -60,7 +60,7 @@
   {@html item}
 {/each} -->
 
-{#each $MosaicNodes as markup}
+{#each $MosaicPanels as markup}
   <div class="panel" style="inset:{markup.style}">
     <PanelWindow name={markup.name} />
     <!-- <div class="contents">Window {markup.name || 1}</div> -->
