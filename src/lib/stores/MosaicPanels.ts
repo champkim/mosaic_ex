@@ -18,13 +18,13 @@ import {
   getNodeAtPath,
   getOtherDirection,
   updateTree,
-} from "../util/MosicUtils";
+} from "../util/mosaicUpdates";
 import { BoundingBox } from "../util/BoundingBox";
 import {
   isParent,
   getLeaves,
   createBalancedTreeFromLeaves,
-} from "../util/MosicUtils";
+} from "../util/mosaicUpdates";
 import Split from "../Split.svelte";
 
 //let initNode: any; //MosaicNode<number> = {};

@@ -1,6 +1,19 @@
 <script lang="ts">
   import MosaicPanel from "./MosaicPanel.svelte";
   import { MosaicPanels } from "./stores/MosaicPanels";
+  // import type {
+  //   MosaicKey,
+  //   MosaicParent,
+  //   MosaicNode,
+  //   MosaicBranch,
+  //   MosaicDirection,
+  //   MarkUps,
+  //   MosaicPath,
+  //   ResizeOptions,
+  //   TileRenderer,
+  // } from "./type/commonType";
+  // import { v4 as uuid } from "uuid";
+  //export let mosaicId;
 </script>
 
 <div id="mosaic" class="mosaic" style="flex-direction:row">

@@ -1,10 +1,13 @@
 import get from "lodash/get";
 import set from "lodash/set";
-import clone from 'lodash/clone';
+import clone from "lodash/clone";
+import dropRight from "lodash/dropRight";
+import last from "lodash/last";
 //import update from "svelte-Splitpanes";
 import update from "immutability-helper";
 
 import type {
+  MosaicBranch,
   MosaicKey,
   MosaicNode,
   MosaicParent,
@@ -13,6 +16,11 @@ import type {
   MosaicUpdate,
   MosaicUpdateSpec,
 } from "../type/commonType";
+
+import {
+  getAndAssertNodeAtPathExists,
+  getOtherBranch,
+} from "./mosaicUtilities";
 
 export enum Corner {
   TOP_LEFT = 1,
@@ -55,6 +63,29 @@ export function updateTree<T extends MosaicKey>(
   });
 
   return currentNode;
+}
+
+/**
+ * Creates a `MosaicUpdate<T>` to remove the node at `path` from `root`
+ * @param root
+ * @param path
+ * @returns {{path: T[], spec: {$set: MosaicNode<T>}}}
+ */
+export function createRemoveUpdate<T extends MosaicKey>(
+  root: MosaicNode<T> | null,
+  path: MosaicPath
+): MosaicUpdate<T> {
+  const parentPath = dropRight(path);
+  const nodeToRemove = last(path);
+  const siblingPath = parentPath.concat(getOtherBranch(nodeToRemove!));
+  const sibling = getAndAssertNodeAtPathExists(root, siblingPath);
+
+  return {
+    path: parentPath,
+    spec: {
+      $set: sibling,
+    },
+  };
 }
 
 export function getOtherDirection(direction: MosaicDirection): MosaicDirection {
@@ -110,7 +141,9 @@ export function getNodeAtPath<T extends MosaicKey>(
   }
 }
 
-export function getLeaves<T extends MosaicKey>(tree: MosaicNode<T> | null): T[] {
+export function getLeaves<T extends MosaicKey>(
+  tree: MosaicNode<T> | null
+): T[] {
   if (tree == null) {
     return [];
   } else if (isParent(tree)) {
@@ -122,7 +155,7 @@ export function getLeaves<T extends MosaicKey>(tree: MosaicNode<T> | null): T[] 
 
 export function createBalancedTreeFromLeaves<T extends MosaicKey>(
   leaves: MosaicNode<T>[],
-  startDirection: MosaicDirection = 'row',
+  startDirection: MosaicDirection = "row"
 ): MosaicNode<T> | null {
   if (leaves.length === 0) {
     return null;
@@ -135,7 +168,7 @@ export function createBalancedTreeFromLeaves<T extends MosaicKey>(
     while (current.length > 0) {
       if (current.length > 1) {
         next.push({
-          direction: 'row',
+          direction: "row",
           first: current.shift()!,
           second: current.shift()!,
         });
@@ -151,8 +184,8 @@ export function createBalancedTreeFromLeaves<T extends MosaicKey>(
 
 function alternateDirection<T extends MosaicKey>(
   node: MosaicNode<T>,
-  direction: MosaicDirection = 'row',
-): MosaicNode<T> {  
+  direction: MosaicDirection = "row"
+): MosaicNode<T> {
   if (isParent(node)) {
     const nextDirection = getOtherDirection(direction);
     return {
@@ -163,4 +196,60 @@ function alternateDirection<T extends MosaicKey>(
   } else {
     return node;
   }
+}
+
+/**
+ * Sets the splitPercentage to hide the node at `path`
+ * @param path
+ * @returns {{path: T[], spec: {splitPercentage: {$set: number}}}}
+ */
+export function createHideUpdate<T extends MosaicKey>(
+  path: MosaicPath
+): MosaicUpdate<T> {
+  const targetPath = dropRight(path);
+  const thisBranch = last(path);
+
+  let splitPercentage: number;
+  if (thisBranch === "first") {
+    splitPercentage = 0;
+  } else {
+    splitPercentage = 100;
+  }
+
+  return {
+    path: targetPath,
+    spec: {
+      splitPercentage: {
+        $set: splitPercentage,
+      },
+    },
+  };
+}
+
+/**
+ * Sets the splitPercentage of node at `path` and all of its parents to `percentage` in order to expand it
+ * @param path
+ * @param percentage
+ * @returns {{spec: MosaicUpdateSpec<T>, path: Array}}
+ */
+export function createExpandUpdate<T extends MosaicKey>(
+  path: MosaicPath,
+  percentage: number
+): MosaicUpdate<T> {
+  let spec: MosaicUpdateSpec<T> = {};
+  for (let i = path.length - 1; i >= 0; i--) {
+    const branch: MosaicBranch = path[i];
+    const splitPercentage = branch === "first" ? percentage : 100 - percentage;
+    spec = {
+      splitPercentage: {
+        $set: splitPercentage,
+      },
+      [branch]: spec,
+    };
+  }
+
+  return {
+    spec,
+    path: [],
+  };
 }
