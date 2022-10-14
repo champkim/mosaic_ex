@@ -41,10 +41,10 @@ export interface MosaicUpdate<T extends MosaicKey> {
  * Mosaic needs a way to resolve `MosaicKey` into react elements for display.
  * This provides a way to render them.
  */
-// export type TileRenderer<T extends MosaicKey> = (
-//   t: T,
-//   path: MosaicBranch[]
-// ) => JSX.Element;
+export type TileRenderer<T extends MosaicKey> = (
+  t: T,
+  path: MosaicBranch[]
+) => Element; //JSX.Element;
 
 /**
  * Function that provides a new node to put into the tree
@@ -67,7 +67,21 @@ export interface EnabledResizeOptions {
 
 export type ResizeOptions = "DISABLED" | EnabledResizeOptions;
 
+// export interface OffsetRect {
+//   offsetWidth: number;
+//   offsetHeight: number;
+// }
+
 export interface MarkUps {
   style: string;
   name: string;
+  path: MosaicBranch[];
+  // offsetRect: OffsetRect;
+  //direction: MosaicDirection;
 }
+
+export interface EnabledResizeOptions {
+  minimumPaneSizePercentage?: number; // Default: 20
+}
+
+//export type TileRenderer<T extends MosaicKey> = (t: T, path: MosaicBranch[]) = svelte.JSX; // JSX.Element;

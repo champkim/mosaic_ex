@@ -1,13 +1,17 @@
 import { writable } from "svelte/store";
 import flatten from "lodash/flatten";
 import dropRight from "lodash/dropRight";
+import { v4 as uuid } from "uuid";
 import type {
+  MosaicKey,
   MosaicParent,
   MosaicNode,
   MosaicBranch,
   MosaicDirection,
   MarkUps,
   MosaicPath,
+  ResizeOptions,
+  CreateNode,
 } from "../type/commonType";
 import {
   Corner,
@@ -15,29 +19,64 @@ import {
   getNodeAtPath,
   getOtherDirection,
   updateTree,
-} from "../util/MosicUtils";
+} from "../util/mosaicUpdates";
 import { BoundingBox } from "../util/BoundingBox";
-import { isParent } from "../util/MosicUtils";
+import {
+  isParent,
+  getLeaves,
+  createBalancedTreeFromLeaves,
+} from "../util/mosaicUpdates";
 import Split from "../Split.svelte";
 
-let initNode: MosaicNode<number> = {};
+//let initNode: any; //MosaicNode<number> = {};
 
-function nonNullElement(
-  x: MarkUps | Array<MarkUps> | null
-): x is MarkUps | Array<MarkUps> {
-  return x !== null;
+interface AppState {
+  currentNode: MosaicNode<number> | null;
 }
+//implements AppState
 
-class MosaicPanel {
-  private currentNode: MosaicNode<number>;
-  private windowCount: number = 2;
+class MosaicPanel implements AppState {
+  currentNode: MosaicNode<number> | null;
+  // currentNode: MosaicNode<number> | null = {
+  //   direction: "row",
+  //   first: 1,
+  //   second: {
+  //     direction: "column",
+  //     first: 2,
+  //     second: 3,
+  //   },
+  //   splitPercentage: 40,
+  // };
+
   private boundingBox: BoundingBox = BoundingBox.empty();
   private path: MosaicBranch[] = [];
   private panelMarkups: Array<MarkUps> = [];
 
-  constructor(node) {
-    this.currentNode = node;
+  private windowCount: number = 3;
+  public createNode = () => ++this.windowCount;
+  //public createNode: CreateNode<number> = () => ++this.windowCount;
+
+  // private onChange = (currentNode: MosaicNode<number> | null) => {
+  //   this.setState({ currentNode });
+  // };
+
+  public getCurrentNode() {
+    return this.currentNode;
   }
+
+  private onRelease = (currentNode: MosaicNode<number> | null) => {
+    console.log("Mosaic.onRelease():", currentNode);
+  };
+
+  public autoArrange = () => {
+    const leaves = getLeaves(this.currentNode);
+    return this.setCurrentNode(createBalancedTreeFromLeaves(leaves));
+  };
+
+  // constructor(node) {
+  //   //super(node);
+  //   this.currentNode = node;
+  // }
 
   setCurrentNode(node) {
     this.currentNode = node;
@@ -67,9 +106,9 @@ class MosaicPanel {
       let second: MosaicNode<number>;
       if (direction === "row") {
         first = destination;
-        second = ++this.windowCount;
+        second = this.createNode();
       } else {
-        first = ++this.windowCount;
+        first = this.createNode();
         second = destination;
       }
 
@@ -86,7 +125,7 @@ class MosaicPanel {
         },
       ]);
     } else {
-      this.currentNode = ++this.windowCount;
+      this.currentNode = this.createNode();
     }
   }
 
@@ -150,32 +189,73 @@ class MosaicPanel {
             },
           }),
           this.renderRecursively(node.second, second, path.concat("second")),
-        ].filter(nonNullElement)
+        ] //.filter(nonNullElement)
       );
     } else {
-      let markups: MarkUps = { style: "", name: "" };
+      let markups: MarkUps = {
+        style: "",
+        name: "",
+        path: null,
+        //offsetRect: { offsetWidth: 0, offsetHeight: 0 },
+        direction: "row",
+      };
 
       markups.style = `${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}%`;
       markups.name = `${node}`;
+      markups.path = path;
       this.panelMarkups.push(markups);
+      //reat 에서는  {this.props.renderTile(node, path)} 여기서 한번 html 생성. ,,
     }
   }
 
-  createNodes() {
+  private checkCreateNode() {
+    if (this.createNode == null) {
+      throw new Error("Operation invalid unless `createNode` is defined");
+    }
+  }
+
+  // private split = (...args: any[]) => {
+  //   this.checkCreateNode();
+  //   const { createNode, path } = this.props;
+  //   const { mosaicActions } = this.context;
+  //   const root = mosaicActions.getRoot();
+
+  //   const direction: MosaicDirection =
+  //     this.rootElement!.offsetWidth > this.rootElement!.offsetHeight ? 'row' : 'column';
+
+  //   return Promise.resolve(createNode!(...args)).then((second) =>
+  //     mosaicActions.replaceWith(path, {
+  //       direction,
+  //       second,
+  //       first: getAndAssertNodeAtPathExists(root, path),
+  //     }),
+  //   );
+  // };
+
+  // private swap = (...args: any[]) => {
+  //   this.checkCreateNode();
+  //   const { mosaicActions } = this.context;
+  //   const { createNode, path } = this.props;
+  //   return Promise.resolve(createNode!(...args)).then((node) => mosaicActions.replaceWith(path, node));
+  // };
+
+  createPanels() {
     const { subscribe, set, update } = writable(this.panelMarkups);
 
     return {
       subscribe,
       renderRecursively: () => update(() => this.onRenderRecursively()),
       addToTopRight: () => update(() => this.onAddToTopRight()),
+      autoArrange: () => update(() => this.autoArrange()),
       setCurrentNode: (node) => update(() => this.setCurrentNode(node)),
       onResize: (path, percentage) =>
         update(() => this.onResize(path, percentage)),
-      getCurrentNode: () => this.currentNode,
+      //getCurrentNode: () => this.currentNode,
     };
   }
 }
 
-const mosaicPanel = new MosaicPanel(initNode);
+const mosaicPanel = new MosaicPanel();
 
-export const MosaicNodes = mosaicPanel.createNodes();
+export const Mosaic = mosaicPanel;
+export const MosaicPanels = mosaicPanel.createPanels();
