@@ -70,6 +70,7 @@ export type ResizeOptions = "DISABLED" | EnabledResizeOptions;
 export interface MarkUps {
   style: string;
   name: string;
+  path: MosaicBranch[];
 }
 
 export interface EnabledResizeOptions {

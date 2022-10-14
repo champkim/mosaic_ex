@@ -83,7 +83,7 @@ export interface MosaicWindowActions {
   /**
    * Sets the open state for the tray that holds additional controls
    */
-  setAdditionalControlsOpen: (open: boolean) => void;
+  // setAdditionalControlsOpen: (open: boolean) => void;
   /**
    * Returns the path to this window
    */
@@ -91,9 +91,9 @@ export interface MosaicWindowActions {
   /**
    * Enables connecting a different drag source besides the react-mosaic toolbar
    */
-  connectDragSource: (
-    connectedElements: React.ReactElement<any>
-  ) => React.ReactElement | null;
+  // connectDragSource: (
+  //   connectedElements: React.ReactElement<any>
+  // ) => Element | null;
 }
 
 export const MosaicContext = React.createContext<MosaicContext<MosaicKey>>(

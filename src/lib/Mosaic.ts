@@ -1,5 +1,5 @@
 import MosaicPanel from "./MosaicPanel.svelte";
-import { MosaicPanels } from "./stores/MosaicPanels";
+import { Mosaic, MosaicPanels } from "./stores/MosaicPanels";
 import countBy from "lodash/countBy";
 import keys from "lodash/keys";
 import pickBy from "lodash/pickBy";
@@ -130,11 +130,22 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
   lastInitialValue: MosaicNode<T> | null;
   mosaicId: string;
 
-  private props: MosaicProps<T>;
+  private props: MosaicProps<T> = {
+    initialValue: null,
+    value: null,
+    renderTile: null,
+  };
 
-  constructor(props: MosaicProps<T>) {
+  defaultProps = {
+    onChange: () => void 0,
+    value: null,
+    //className: 'mosaic-blueprint-theme',
+    //blueprintNamespace: 'bp3',
+  };
+
+  constructor() {
+    //props: MosaicProps<T>
     //super(node);
-    this.props = props;
 
     this.currentNode = null;
     this.lastInitialValue = null;
@@ -145,7 +156,7 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
     if (isUncontrolled(this.props)) {
       return this.currentNode;
     } else {
-      return this.props.value;
+      return Mosaic.getCurrentNode() as MosaicNode<T>; //this.props.value;
     }
   }
 
@@ -158,10 +169,14 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
     this.replaceRoot(updateTree(currentNode, updates), suppressOnRelease);
   };
 
-  private replaceRoot = (
+  public replaceRoot = (
     currentNode: MosaicNode<T> | null,
     suppressOnRelease: boolean = false
   ) => {
+    this.currentNode = currentNode;
+    MosaicPanels.setCurrentNode(currentNode);
+    console.log(">>>>>>>>>> Set.. Cur.." + currentNode);
+
     this.props.onChange!(currentNode);
     if (!suppressOnRelease && this.props.onRelease) {
       this.props.onRelease(currentNode);
@@ -169,11 +184,12 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
 
     if (isUncontrolled(this.props)) {
       //todo: this.setState({ currentNode });
-      this.currentNode = currentNode;
+      //this.currentNode = currentNode;
+      //MosaicPanels.setCurrentNode(this.currentNode);
     }
   };
 
-  private actions: MosaicRootActions<T> = {
+  public actions: MosaicRootActions<T> = {
     updateTree: this.updateRoot,
     remove: (path: MosaicPath) => {
       if (path.length === 0) {
@@ -231,3 +247,14 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
     }
   }
 }
+
+const props = {
+  onChange: () => void 0,
+  value: null,
+  //className: 'mosaic-blueprint-theme',
+  //blueprintNamespace: 'bp3',
+};
+
+const mosaicWithout = new MosaicWithoutDragDropContext<number>();
+
+export const MosaicActions = mosaicWithout;

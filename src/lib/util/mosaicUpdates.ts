@@ -56,6 +56,7 @@ export function updateTree<T extends MosaicKey>(
   let currentNode = root;
   updates.forEach((mUpdate: MosaicUpdate<T>) => {
     //console.log(mUpdate);
+    console.log(currentNode + ">>>mUpdate: " + mUpdate);
     currentNode = update(
       currentNode as MosaicParent<T>,
       buildSpecFromUpdate(mUpdate)

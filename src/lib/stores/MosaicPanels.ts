@@ -11,6 +11,7 @@ import type {
   MarkUps,
   MosaicPath,
   ResizeOptions,
+  CreateNode,
 } from "../type/commonType";
 import {
   Corner,
@@ -52,11 +53,16 @@ class MosaicPanel implements AppState {
   private panelMarkups: Array<MarkUps> = [];
 
   private windowCount: number = 3;
-  private createNode = () => ++this.windowCount;
+  public createNode = () => ++this.windowCount;
+  //public createNode: CreateNode<number> = () => ++this.windowCount;
 
   // private onChange = (currentNode: MosaicNode<number> | null) => {
   //   this.setState({ currentNode });
   // };
+
+  public getCurrentNode() {
+    return this.currentNode;
+  }
 
   private onRelease = (currentNode: MosaicNode<number> | null) => {
     console.log("Mosaic.onRelease():", currentNode);
@@ -100,9 +106,9 @@ class MosaicPanel implements AppState {
       let second: MosaicNode<number>;
       if (direction === "row") {
         first = destination;
-        second = ++this.windowCount;
+        second = this.createNode();
       } else {
-        first = ++this.windowCount;
+        first = this.createNode();
         second = destination;
       }
 
@@ -119,7 +125,7 @@ class MosaicPanel implements AppState {
         },
       ]);
     } else {
-      this.currentNode = ++this.windowCount;
+      this.currentNode = this.createNode();
     }
   }
 
@@ -186,10 +192,11 @@ class MosaicPanel implements AppState {
         ] //.filter(nonNullElement)
       );
     } else {
-      let markups: MarkUps = { style: "", name: "" };
+      let markups: MarkUps = { style: "", name: "", path: null };
 
       markups.style = `${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}%`;
       markups.name = `${node}`;
+      markups.path = path;
       this.panelMarkups.push(markups);
       //reat 에서는  {this.props.renderTile(node, path)} 여기서 한번 html 생성. ,,
     }
@@ -237,11 +244,12 @@ class MosaicPanel implements AppState {
       setCurrentNode: (node) => update(() => this.setCurrentNode(node)),
       onResize: (path, percentage) =>
         update(() => this.onResize(path, percentage)),
-      getCurrentNode: () => this.currentNode,
+      //getCurrentNode: () => this.currentNode,
     };
   }
 }
 
 const mosaicPanel = new MosaicPanel();
 
+export const Mosaic = mosaicPanel;
 export const MosaicPanels = mosaicPanel.createPanels();

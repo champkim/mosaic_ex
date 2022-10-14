@@ -19,7 +19,11 @@
 <div id="mosaic" class="mosaic" style="flex-direction:row">
   {#each $MosaicPanels as markup}
     <div class="mosiacpanel" style="inset:{markup.style}">
-      <MosaicPanel name={markup.name} />
+      <!-- <MosaicPanel name={markup.name} /> -->
+      <MosaicPanel renderToolbar={markup.name != "2"} path={markup.path}>
+        Window {markup.name}</MosaicPanel
+      >
+      <!-- <div class="contents">Window {name || 1}</div> -->
       <!-- <div class="contents">Window {markup.name || 1}</div> -->
     </div>
   {/each}
