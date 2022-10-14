@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import axios from "axios";
-  import { MosaicPanels } from "./lib/stores/MosaicPanels";
+  import { MosaicPanels, Mosaic } from "./lib/stores/MosaicPanels";
   import type { MosaicNode } from "./lib/type/commonType";
 
   //const pagesurl = "http://127.0.0.1:3000/pages";
@@ -53,7 +53,7 @@
       const data = [
         {
           index: active,
-          contents: JSON.stringify(MosaicPanels.getCurrentNode()),
+          contents: JSON.stringify(Mosaic.getCurrentNode()),
         },
       ];
 
