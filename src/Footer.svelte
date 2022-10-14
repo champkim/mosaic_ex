@@ -1,42 +1,48 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import axios from "axios";
-  import { MosaicNodes } from "./lib/stores/MosaicPanel";
+  import { MosaicPanels, Mosaic } from "./lib/stores/MosaicPanels";
   import type { MosaicNode } from "./lib/type/commonType";
+
+  //const pagesurl = "http://127.0.0.1:3000/pages";
+  //const pagesurl = "http://192.168.0.6:2001/pages";
 
   const initNode: MosaicNode<number> = {
     direction: "row",
     first: 1,
     second: 2,
   };
+  // const initNode: MosaicNode<number> = null;
 
   let array: number[] = [0, 1, 2, 3, 4, 5];
-  let profileList: { contents: MosaicNode<number>; index: number }[] = [];
+  let profileList: { contents: MosaicNode<number>; index: number }[];
+  profileList = new Array(6);
+  profileList = profileList.fill({ contents: initNode, index: -1 });
   let active = 0;
+  //let beURL = "http://ontune.iptime.org:2001/pages"
 
   const onClickButton = (number: number) => {
     if (active !== number) {
       active = number;
-      MosaicNodes.setCurrentNode(profileList[number].contents);
+      getPageDataById(number);
     }
   };
 
-  onMount(async () => {
-    // await axios.delete("http://127.0.0.1:3000/pages")
-
+  const getPageDataById = async (id) => {
     try {
-      const response = await axios.get("http://ontune.iptime.org:2001/pages");
-      profileList = new Array(6);
-      profileList = profileList.fill({ contents: initNode, index: -1 });
-      response.data.forEach(({ contents, index }) => {
-        profileList[index] = { index, contents: JSON.parse(contents) };
-      });
-
-      MosaicNodes.setCurrentNode(profileList[0].contents);
+      const {
+        data: { index, contents },
+      } = await axios.get(`${import.meta.env.VITE_API_URL}/pages/${id}`);
+      const parseContents = JSON.parse(contents);
+      profileList[index] = { index, contents: parseContents };
+      MosaicPanels.setCurrentNode(parseContents);
     } catch (error) {
+      MosaicPanels.setCurrentNode(initNode);
       console.log(error);
     }
-  });
+  };
+
+  onMount(async () => await getPageDataById(0));
 
   const onUpdateProfile = async () => {
     if (active === 0) {
@@ -47,19 +53,26 @@
       const data = [
         {
           index: active,
-          contents: JSON.stringify(MosaicNodes.getCurrentNode()),
+          contents: JSON.stringify(Mosaic.getCurrentNode()),
         },
       ];
+
       const apiMethod = profileList[active].index === -1 ? "post" : "put";
+      console.log("METHOD" + apiMethod);
       try {
         const options = {
-          url: "http://ontune.iptime.org:2001/pages",
+          // <<<<<<< HEAD
+          //           url: beURL,
+          // =======
+          url: `${import.meta.env.VITE_API_URL}/pages`,
+          // >>>>>>> abb14fb78f00f7c59a31abadc706eb3774abbd52
           method: apiMethod,
           data,
         };
         const response = await axios(options);
-        profileList[active].contents = MosaicNodes.getCurrentNode();
-      } catch (error) {}
+      } catch (error) {
+        console.log("에러" + error);
+      }
     }
   };
 </script>
