@@ -192,7 +192,13 @@ class MosaicPanel implements AppState {
         ] //.filter(nonNullElement)
       );
     } else {
-      let markups: MarkUps = { style: "", name: "", path: null };
+      let markups: MarkUps = {
+        style: "",
+        name: "",
+        path: null,
+        //offsetRect: { offsetWidth: 0, offsetHeight: 0 },
+        direction: "row",
+      };
 
       markups.style = `${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}%`;
       markups.name = `${node}`;

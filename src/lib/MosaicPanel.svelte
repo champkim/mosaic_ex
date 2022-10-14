@@ -14,6 +14,7 @@
 
   export let renderToolbar: boolean;
   export let path: MosaicBranch[];
+  export let direction: MosaicDirection;
 
   // split = (...args: any[]) => {
   //   this.checkCreateNode();
@@ -42,10 +43,19 @@
     // const root = mosaicActions.getRoot();
     //console.log('>>>>>>  ' + (root as MosaicNode<T>) + ', ' + path);
     const root = Mosaic.getCurrentNode();
-    const direction: MosaicDirection = "row";
+    //let direction: MosaicDirection = panelDirection as MosaicDirection;
+    // let direction: MosaicDirection =
+    //   offsetWidth > offsetHeight ? "row" : "column";
+    // alert(direction);
+    // if (rootElement != null) {
+    //   direction =
+    //     rootElement!.offsetWidth > rootElement!.offsetHeight ? "row" : "column";
+    // } else {
+    //   direction = "row";
+    // }
+
     let createNode: CreateNode<number>;
     createNode = Mosaic.createNode;
-    //this.rootElement!.offsetWidth > this.rootElement!.offsetHeight ? 'row' : 'column';
 
     //alert(path);
     //mosaic.createNode()!(...args)
@@ -61,7 +71,7 @@
   };
 
   function splitWindowClick() {
-    alert("split Window 2");
+    //alert("split Window 2");
 
     split()
       .then(() => {

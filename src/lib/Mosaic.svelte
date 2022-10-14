@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { element, HtmlTag } from "svelte/internal";
   import MosaicPanel from "./MosaicPanel.svelte";
   import { MosaicPanels } from "./stores/MosaicPanels";
+  import type { MosaicDirection } from "./type/commonType";
   // import type {
   //   MosaicKey,
   //   MosaicParent,
@@ -14,15 +16,37 @@
   // } from "./type/commonType";
   // import { v4 as uuid } from "uuid";
   //export let mosaicId;
+  let offsetWidth: number[] = [];
+  let offsetHeight: number[] = [];
 </script>
 
 <div id="mosaic" class="mosaic" style="flex-direction:row">
-  {#each $MosaicPanels as markup}
-    <div class="mosiacpanel" style="inset:{markup.style}">
+  {#each $MosaicPanels as markup, index}
+    <div
+      class="mosiacpanel"
+      style="inset:{markup.style}"
+      bind:offsetWidth={offsetWidth[index]}
+      bind:offsetHeight={offsetHeight[index]}
+    >
       <!-- <MosaicPanel name={markup.name} /> -->
-      <MosaicPanel renderToolbar={markup.name != "2"} path={markup.path}>
-        Window {markup.name}</MosaicPanel
+      <!-- ref={(element) => (this.rootElement = element)} -->
+      <MosaicPanel
+        renderToolbar={markup.name != "2"}
+        path={markup.path}
+        direction={offsetWidth[index] > offsetHeight[index] ? "row" : "column"}
       >
+        <!-- panelDirection={offsetWidth > offsetHeight ? "row" : "column"} -->
+        <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
+        <!-- rootElement={this.rootElement} -->
+
+        <!-- {(markup.direction = offsetWidth[index] > offsetHeight[index] ? "row" : "column")} -->
+        Window {markup.name}
+        {offsetWidth[index]} x {offsetHeight[index]}
+        <!-- {markup.direction} -->
+
+        <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
+      </MosaicPanel>
+
       <!-- <div class="contents">Window {name || 1}</div> -->
       <!-- <div class="contents">Window {markup.name || 1}</div> -->
     </div>

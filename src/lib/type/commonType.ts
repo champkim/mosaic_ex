@@ -67,10 +67,17 @@ export interface EnabledResizeOptions {
 
 export type ResizeOptions = "DISABLED" | EnabledResizeOptions;
 
+// export interface OffsetRect {
+//   offsetWidth: number;
+//   offsetHeight: number;
+// }
+
 export interface MarkUps {
   style: string;
   name: string;
   path: MosaicBranch[];
+  // offsetRect: OffsetRect;
+  //direction: MosaicDirection;
 }
 
 export interface EnabledResizeOptions {
