@@ -197,7 +197,7 @@ class MosaicPanel implements AppState {
         name: "",
         path: null,
         //offsetRect: { offsetWidth: 0, offsetHeight: 0 },
-        direction: "row",
+        //direction: "row",
       };
 
       markups.style = `${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}%`;
