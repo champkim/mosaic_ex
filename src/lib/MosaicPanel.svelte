@@ -10,6 +10,7 @@
     MosaicNode,
     CreateNode,
   } from "./type/commonType";
+
   import { getAndAssertNodeAtPathExists } from "./util/mosaicUtilities";
 
   export let renderToolbar: boolean;
@@ -85,7 +86,13 @@
   }
 
   function closeWindowClick() {
-    alert("close Window");
+    //alert("close Window");
+
+    MosaicActions.actions.remove(path);
+
+    if (this.props.onClick) {
+      this.props.onClick();
+    }
   }
 </script>
 
