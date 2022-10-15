@@ -85,6 +85,32 @@
     console.log(Mosaic.getCurrentNode());
   }
 
+  let swap = (...args: any[]) => {
+    let createNode: CreateNode<number>;
+    createNode = Mosaic.createNode;
+    //this.checkCreateNode();
+    return Promise.resolve(createNode!(...args)).then((node) =>
+      MosaicActions.actions.replaceWith(path, node)
+    );
+  };
+
+  function replaceWindowClick() {
+    swap()
+      .then(() => {
+        if (this.props.onClick) {
+          this.props.onClick();
+        }
+      })
+      .catch(noop); // Swallow rejections (i.e. on user cancel)
+  }
+
+  function expandWindowClick() {
+    MosaicActions.actions.expand(path);
+    if (this.props.onClick) {
+      this.props.onClick();
+    }
+  }
+
   function closeWindowClick() {
     //alert("close Window");
 
@@ -100,8 +126,10 @@
   {#if renderToolbar}
     <div>Topbar</div>
     <div class="button-wrap">
+      <button on:click={replaceWindowClick}>↔</button>
       <button on:click={splitWindowClick}>+</button>
-      <button on:click={closeWindowClick}>-</button>
+      <button on:click={expandWindowClick}>↕</button>
+      <button on:click={closeWindowClick}>x</button>
     </div>
   {:else}
     <div class="custombar">Custom Toolbar</div>
