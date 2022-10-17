@@ -1,7 +1,7 @@
 <script lang="ts">
   import { element, HtmlTag } from "svelte/internal";
   import MosaicPanel from "./MosaicPanel.svelte";
-  import { MosaicPanels } from "./lib/MosaicPanels";
+  import { MosaicRender } from "./lib/MosaicRoot";
   import type { MosaicDirection } from "./lib/type/commonType";
   // import type {
   //   MosaicKey,
@@ -21,7 +21,7 @@
 </script>
 
 <div id="mosaic" class="mosaic" style="flex-direction:row">
-  {#each $MosaicPanels as markup, index}
+  {#each $MosaicRender as markup, index}
     <div
       class="mosiacpanel"
       style="inset:{markup.style}"

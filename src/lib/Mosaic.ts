@@ -1,4 +1,4 @@
-import { Mosaic, MosaicPanels } from "./MosaicPanels";
+import { MosaicRoot, MosaicRender } from "./MosaicRoot";
 import countBy from "lodash/countBy";
 import keys from "lodash/keys";
 import pickBy from "lodash/pickBy";
@@ -155,7 +155,7 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
     // if (isUncontrolled(this.props)) {
     //   return this.currentNode;
     // } else {
-    return Mosaic.getCurrentNode() as MosaicNode<T>; //this.props.value;
+    return MosaicRoot.getCurrentNode() as MosaicNode<T>; //this.props.value;
     // }
   }
 
@@ -173,7 +173,7 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
     suppressOnRelease: boolean = false
   ) => {
     this.currentNode = currentNode;
-    MosaicPanels.setCurrentNode(currentNode);
+    MosaicRender.setCurrentNode(currentNode);
     // console.log(">>>>>>>>>> Set.. Cur.." + currentNode);
 
     //여기 아래부분은 나중에 확인..

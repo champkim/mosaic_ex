@@ -1,6 +1,6 @@
 <script lang="ts">
   import noop from "lodash/noop";
-  import { Mosaic } from "./lib/MosaicPanels";
+  import { MosaicRoot } from "./lib/MosaicRoot";
   import { MosaicActions } from "./lib/Mosaic";
 
   import type {
@@ -16,10 +16,10 @@
   export let direction: MosaicDirection;
 
   let split = (...args: any[]) => {
-    const root = Mosaic.getCurrentNode();
+    const root = MosaicRoot.getCurrentNode();
 
     let createNode: CreateNode<number>;
-    createNode = Mosaic.createNode;
+    createNode = MosaicRoot.createNode;
 
     return Promise.resolve(createNode!(...args)).then((second) =>
       MosaicActions.actions.replaceWith(path, {
@@ -42,7 +42,7 @@
 
   let swap = (...args: any[]) => {
     let createNode: CreateNode<number>;
-    createNode = Mosaic.createNode;
+    createNode = MosaicRoot.createNode;
     //this.checkCreateNode();
     return Promise.resolve(createNode!(...args)).then((node) =>
       MosaicActions.actions.replaceWith(path, node)

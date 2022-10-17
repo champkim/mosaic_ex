@@ -35,7 +35,7 @@ interface AppState {
 }
 //implements AppState
 
-class MosaicPanel implements AppState {
+class Mosaic implements AppState {
   currentNode: MosaicNode<number> | null;
   // currentNode: MosaicNode<number> | null = {
   //   direction: "row",
@@ -239,8 +239,8 @@ class MosaicPanel implements AppState {
   //   return Promise.resolve(createNode!(...args)).then((node) => mosaicActions.replaceWith(path, node));
   // };
 
-  createPanels() {
-    const { subscribe, set, update } = writable(this.panelMarkups);
+  createStores() {
+    const { subscribe, update } = writable(this.panelMarkups);
 
     return {
       subscribe,
@@ -255,7 +255,7 @@ class MosaicPanel implements AppState {
   }
 }
 
-const mosaicPanel = new MosaicPanel();
+const mosaic = new Mosaic();
 
-export const Mosaic = mosaicPanel;
-export const MosaicPanels = mosaicPanel.createPanels();
+export const MosaicRoot = mosaic;
+export const MosaicRender = mosaic.createStores();

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { MosaicPanels } from "./lib/MosaicPanels";
+  import { MosaicRender } from "./lib/MosaicRoot";
   import type { MosaicDirection } from "./lib/type/commonType";
   import type { BoundingBox } from "./lib/util/BoundingBox";
 
@@ -22,7 +22,7 @@
       } else {
         percent = ((e.clientX - parent.left) / parent.width) * 100.0;
       }
-      if (percent > 20 && percent < 80) MosaicPanels.onResize(path, percent);
+      if (percent > 20 && percent < 80) MosaicRender.onResize(path, percent);
     }
 
     splitRef.addEventListener(
