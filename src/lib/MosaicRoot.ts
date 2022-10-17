@@ -53,6 +53,7 @@ class Mosaic implements AppState {
   private panelMarkups: Array<MarkUps> = [];
 
   private windowCount: number = 3;
+  private newWindowCount: number = 0;
   public createNode = () => ++this.windowCount;
   //public createNode: CreateNode<number> = () => ++this.windowCount;
 
@@ -159,8 +160,10 @@ class Mosaic implements AppState {
 
   onRenderRecursively(): Array<MarkUps> {
     this.panelMarkups = [];
-    console.log(this.currentNode);
+    this.newWindowCount = 0;
+    //console.log(this.currentNode);
     this.renderRecursively(this.currentNode, this.boundingBox, this.path);
+    this.windowCount = this.newWindowCount;
     return this.panelMarkups;
   }
 
@@ -204,6 +207,9 @@ class Mosaic implements AppState {
       markups.name = `${node}`;
       markups.path = path;
       this.panelMarkups.push(markups);
+      if (this.newWindowCount < node) {
+        this.newWindowCount = node;
+      }
       //reat 에서는  {this.props.renderTile(node, path)} 여기서 한번 html 생성. ,,
     }
   }

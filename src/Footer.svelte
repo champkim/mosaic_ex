@@ -7,10 +7,21 @@
   //const pagesurl = "http://127.0.0.1:3000/pages";
   //const pagesurl = "http://192.168.0.6:2001/pages";
 
+  // const initNode: MosaicNode<number> = {
+  //   direction: "row",
+  //   first: 1,
+  //   second: 2,
+  // };
+
   const initNode: MosaicNode<number> = {
     direction: "row",
     first: 1,
-    second: 2,
+    second: {
+      direction: "column",
+      first: 2,
+      second: 3,
+    },
+    splitPercentage: 40,
   };
   // const initNode: MosaicNode<number> = null;
 

@@ -111,6 +111,10 @@
 <style>
   .panel-topbar {
     display: flex;
+    white-space: nowrap;
+    /* flex-direction: row;
+    flex-wrap: nowrap; */
+
     justify-content: space-between;
     background: rgb(194, 194, 194);
     padding: 4px 8px;
@@ -118,7 +122,9 @@
     align-items: center;
   }
   .panel-topbar .button-wrap {
+    /* display: flex; */
     flex-direction: row;
+    /* flex-wrap: nowrap; */
     gap: 4px;
   }
   .panel-topbar .button-wrap button {
@@ -140,7 +146,6 @@
 
   .button-replace {
     background-image: url("icons/exchange-20.svg");
-    background-size: 100%;
   }
 
   .button-split {

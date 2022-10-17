@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { element, HtmlTag } from "svelte/internal";
   import MosaicPanel from "./MosaicPanel.svelte";
   import { MosaicRender } from "./lib/MosaicRoot";
-  import type { MosaicDirection } from "./lib/type/commonType";
+  // import type { MosaicDirection } from "./lib/type/commonType";
   // import type {
   //   MosaicKey,
   //   MosaicParent,
