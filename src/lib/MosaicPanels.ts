@@ -12,20 +12,20 @@ import type {
   MosaicPath,
   ResizeOptions,
   CreateNode,
-} from "../type/commonType";
+} from "./type/commonType";
 import {
   Corner,
   getPathToCorner,
   getNodeAtPath,
   getOtherDirection,
   updateTree,
-} from "../util/mosaicUpdates";
-import { BoundingBox } from "../util/BoundingBox";
+} from "./util/mosaicUpdates";
+import { BoundingBox } from "./util/BoundingBox";
 import {
   isParent,
   getLeaves,
   createBalancedTreeFromLeaves,
-} from "../util/mosaicUpdates";
+} from "./util/mosaicUpdates";
 import Split from "../Split.svelte";
 
 //let initNode: any; //MosaicNode<number> = {};

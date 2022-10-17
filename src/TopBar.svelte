@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { MosaicPanels } from "./stores/MosaicPanels";
+  import { MosaicPanels } from "./lib/MosaicPanels";
 
   const onClickGithub = () => {
     window.open("https://github.com/champkim/mosaic_ex", "_blank");

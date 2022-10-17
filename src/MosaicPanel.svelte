@@ -1,65 +1,26 @@
 <script lang="ts">
   import noop from "lodash/noop";
-  import { Mosaic, MosaicPanels } from "./stores/MosaicPanels";
-  import { MosaicActions } from "./Mosaic";
+  import { Mosaic } from "./lib/MosaicPanels";
+  import { MosaicActions } from "./lib/Mosaic";
 
-  //export let name;
   import type {
     MosaicBranch,
     MosaicDirection,
-    MosaicNode,
     CreateNode,
-  } from "./type/commonType";
+  } from "./lib/type/commonType";
 
-  import { getAndAssertNodeAtPathExists } from "./util/mosaicUtilities";
+  import { getAndAssertNodeAtPathExists } from "./lib/util/mosaicUtilities";
 
   export let renderToolbar: boolean;
   export let path: MosaicBranch[];
   export let direction: MosaicDirection;
 
-  // split = (...args: any[]) => {
-  //   this.checkCreateNode();
-  //   const { createNode, path } = this.props;
-  //   const { mosaicActions } = this.context;
-  //   const root = mosaicActions.getRoot();
-  //   //console.log('>>>>>>  ' + (root as MosaicNode<T>) + ', ' + path);
-
-  //   const direction: MosaicDirection =
-  //     this.rootElement!.offsetWidth > this.rootElement!.offsetHeight ? 'row' : 'column';
-
-  //   return Promise.resolve(createNode!(...args)).then((second) =>
-  //     mosaicActions.replaceWith(path, {
-  //       direction,
-  //       second,
-  //       first: getAndAssertNodeAtPathExists(root, path),
-  //     }),
-  //   );
-  // };
-
   let split = (...args: any[]) => {
-    // split = (...args: any[]) => {
-    // this.checkCreateNode();
-    // const { createNode, path } = this.props;
-    // const { mosaicActions } = this.context;
-    // const root = mosaicActions.getRoot();
-    //console.log('>>>>>>  ' + (root as MosaicNode<T>) + ', ' + path);
     const root = Mosaic.getCurrentNode();
-    //let direction: MosaicDirection = panelDirection as MosaicDirection;
-    // let direction: MosaicDirection =
-    //   offsetWidth > offsetHeight ? "row" : "column";
-    // alert(direction);
-    // if (rootElement != null) {
-    //   direction =
-    //     rootElement!.offsetWidth > rootElement!.offsetHeight ? "row" : "column";
-    // } else {
-    //   direction = "row";
-    // }
 
     let createNode: CreateNode<number>;
     createNode = Mosaic.createNode;
 
-    //alert(path);
-    //mosaic.createNode()!(...args)
     return Promise.resolve(createNode!(...args)).then((second) =>
       MosaicActions.actions.replaceWith(path, {
         direction,
@@ -67,13 +28,9 @@
         first: getAndAssertNodeAtPathExists(root, path),
       })
     );
-    //alert(path);
-    //MosaicPanels.setCurrentNode(root);
   };
 
   function splitWindowClick() {
-    //alert("split Window 2");
-
     split()
       .then(() => {
         if (this.props.onClick) {
@@ -81,8 +38,6 @@
         }
       })
       .catch(noop);
-
-    console.log(Mosaic.getCurrentNode());
   }
 
   let swap = (...args: any[]) => {
@@ -112,8 +67,6 @@
   }
 
   function closeWindowClick() {
-    //alert("close Window");
-
     MosaicActions.actions.remove(path);
 
     if (this.props.onClick) {
@@ -122,7 +75,6 @@
   }
 </script>
 
-<!-- ↔ -->
 <div class="panel-topbar">
   {#if renderToolbar}
     <div><slot name="title" /></div>

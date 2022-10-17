@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { MosaicPanels } from "./stores/MosaicPanels";
-  import type { MosaicDirection } from "./type/commonType";
-  import type { BoundingBox } from "./util/BoundingBox";
+  import { MosaicPanels } from "./lib/MosaicPanels";
+  import type { MosaicDirection } from "./lib/type/commonType";
+  import type { BoundingBox } from "./lib/util/BoundingBox";
 
   export let direction: MosaicDirection;
   export let boundbox: BoundingBox;
