@@ -83,22 +83,45 @@
         class="button-replace"
         title="Replace Window"
         on:click={replaceWindowClick}
-      />
+      >
+        <img
+          src="icons/exchange-20.svg"
+          width="20px"
+          height="20px"
+          alt="Replace"
+        />
+      </button>
       <button
         class="button-split"
         title="Split Window"
         on:click={splitWindowClick}
-      />
-      <button
-        class="button-expand"
-        title="Expand"
-        on:click={expandWindowClick}
-      />
+        ><img
+          src="icons/add-column-right-20.svg"
+          width="20px"
+          height="20px"
+          alt="Split"
+        /></button
+      >
+
+      <button class="button-expand" title="Expand" on:click={expandWindowClick}
+        ><img
+          src="icons/maximize-20.svg"
+          width="20px"
+          height="20px"
+          alt="Expand"
+        /></button
+      >
       <button
         class="button-close"
         title="Close Window"
         on:click={closeWindowClick}
-      />
+        ><img
+          src="icons/cross.svg"
+          width="20px"
+          height="20px"
+          alt="Close"
+        /></button
+      >
     </div>
   {:else}
     <div class="custombar">Custom Toolbar</div>
@@ -109,6 +132,11 @@
 <div class="contents"><slot name="contents" /></div>
 
 <style>
+  /* img {
+    align-items: stretch;
+    width: "20px";
+    height: "20px";
+  } */
   .panel-topbar {
     display: flex;
     white-space: nowrap;
@@ -123,6 +151,7 @@
   }
   .panel-topbar .button-wrap {
     /* display: flex; */
+
     flex-direction: row;
     /* flex-wrap: nowrap; */
     gap: 4px;
@@ -144,7 +173,7 @@
     margin: auto;
   }
 
-  .button-replace {
+  /* .button-replace {
     background-image: url("icons/exchange-20.svg");
   }
 
@@ -158,5 +187,5 @@
 
   .button-close {
     background-image: url("icons/cross.svg");
-  }
+  } */
 </style>
