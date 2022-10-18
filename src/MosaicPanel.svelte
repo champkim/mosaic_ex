@@ -85,7 +85,7 @@
         on:click={replaceWindowClick}
       >
         <img
-          src="icons/exchange-20.svg"
+          src="images/exchange-20.svg"
           width="20px"
           height="20px"
           alt="Replace"
@@ -96,7 +96,7 @@
         title="Split Window"
         on:click={splitWindowClick}
         ><img
-          src="icons/add-column-right-20.svg"
+          src="images/add-column-right-20.svg"
           width="20px"
           height="20px"
           alt="Split"
@@ -105,7 +105,7 @@
 
       <button class="button-expand" title="Expand" on:click={expandWindowClick}
         ><img
-          src="icons/maximize-20.svg"
+          src="images/maximize-20.svg"
           width="20px"
           height="20px"
           alt="Expand"
@@ -116,7 +116,7 @@
         title="Close Window"
         on:click={closeWindowClick}
         ><img
-          src="icons/cross.svg"
+          src="images/cross.svg"
           width="20px"
           height="20px"
           alt="Close"
