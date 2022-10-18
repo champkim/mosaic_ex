@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { element, HtmlTag } from "svelte/internal";
   import MosaicPanel from "./MosaicPanel.svelte";
-  import { MosaicPanels } from "./stores/MosaicPanels";
-  import type { MosaicDirection } from "./type/commonType";
+  import { MosaicRender } from "./lib/MosaicRoot";
+  // import type { MosaicDirection } from "./lib/type/commonType";
   // import type {
   //   MosaicKey,
   //   MosaicParent,
@@ -21,7 +20,7 @@
 </script>
 
 <div id="mosaic" class="mosaic" style="flex-direction:row">
-  {#each $MosaicPanels as markup, index}
+  {#each $MosaicRender as markup, index}
     <div
       class="mosiacpanel"
       style="inset:{markup.style}"
@@ -39,9 +38,10 @@
         <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
         <!-- rootElement={this.rootElement} -->
 
+        <span slot="title">Window {markup.name}</span>
         <!-- {(markup.direction = offsetWidth[index] > offsetHeight[index] ? "row" : "column")} -->
-        Window {markup.name}
-        {offsetWidth[index]} x {offsetHeight[index]}
+        <h1 slot="contents">Window {markup.name}</h1>
+        <!-- {offsetWidth[index]} x {offsetHeight[index]} -->
         <!-- {markup.direction} -->
 
         <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
@@ -58,12 +58,23 @@
 </div> 
 -->
 <style>
+  h1 {
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+  }
+
   .mosiacpanel {
     background: #fefefe;
     border: 1px solid #636363;
     margin: 3px;
     border-radius: 4px;
     position: absolute;
+    text-align: center;
   }
 
   .mosaic {

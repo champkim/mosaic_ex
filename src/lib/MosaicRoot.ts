@@ -12,20 +12,20 @@ import type {
   MosaicPath,
   ResizeOptions,
   CreateNode,
-} from "../type/commonType";
+} from "./type/commonType";
 import {
   Corner,
   getPathToCorner,
   getNodeAtPath,
   getOtherDirection,
   updateTree,
-} from "../util/mosaicUpdates";
-import { BoundingBox } from "../util/BoundingBox";
+} from "./util/mosaicUpdates";
+import { BoundingBox } from "./util/BoundingBox";
 import {
   isParent,
   getLeaves,
   createBalancedTreeFromLeaves,
-} from "../util/mosaicUpdates";
+} from "./util/mosaicUpdates";
 import Split from "../Split.svelte";
 
 //let initNode: any; //MosaicNode<number> = {};
@@ -35,7 +35,7 @@ interface AppState {
 }
 //implements AppState
 
-class MosaicPanel implements AppState {
+class Mosaic implements AppState {
   currentNode: MosaicNode<number> | null;
   // currentNode: MosaicNode<number> | null = {
   //   direction: "row",
@@ -53,6 +53,7 @@ class MosaicPanel implements AppState {
   private panelMarkups: Array<MarkUps> = [];
 
   private windowCount: number = 3;
+  private newWindowCount: number = 0;
   public createNode = () => ++this.windowCount;
   //public createNode: CreateNode<number> = () => ++this.windowCount;
 
@@ -159,8 +160,10 @@ class MosaicPanel implements AppState {
 
   onRenderRecursively(): Array<MarkUps> {
     this.panelMarkups = [];
-    console.log(this.currentNode);
+    this.newWindowCount = 0;
+    //console.log(this.currentNode);
     this.renderRecursively(this.currentNode, this.boundingBox, this.path);
+    this.windowCount = this.newWindowCount;
     return this.panelMarkups;
   }
 
@@ -204,6 +207,9 @@ class MosaicPanel implements AppState {
       markups.name = `${node}`;
       markups.path = path;
       this.panelMarkups.push(markups);
+      if (this.newWindowCount < node) {
+        this.newWindowCount = node;
+      }
       //reat 에서는  {this.props.renderTile(node, path)} 여기서 한번 html 생성. ,,
     }
   }
@@ -239,8 +245,8 @@ class MosaicPanel implements AppState {
   //   return Promise.resolve(createNode!(...args)).then((node) => mosaicActions.replaceWith(path, node));
   // };
 
-  createPanels() {
-    const { subscribe, set, update } = writable(this.panelMarkups);
+  createStores() {
+    const { subscribe, update } = writable(this.panelMarkups);
 
     return {
       subscribe,
@@ -255,7 +261,7 @@ class MosaicPanel implements AppState {
   }
 }
 
-const mosaicPanel = new MosaicPanel();
+const mosaic = new Mosaic();
 
-export const Mosaic = mosaicPanel;
-export const MosaicPanels = mosaicPanel.createPanels();
+export const MosaicRoot = mosaic;
+export const MosaicRender = mosaic.createStores();

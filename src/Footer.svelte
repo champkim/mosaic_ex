@@ -1,16 +1,27 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import axios from "axios";
-  import { MosaicPanels, Mosaic } from "./lib/stores/MosaicPanels";
+  import { MosaicRender, MosaicRoot } from "./lib/MosaicRoot";
   import type { MosaicNode } from "./lib/type/commonType";
 
   //const pagesurl = "http://127.0.0.1:3000/pages";
   //const pagesurl = "http://192.168.0.6:2001/pages";
 
+  // const initNode: MosaicNode<number> = {
+  //   direction: "row",
+  //   first: 1,
+  //   second: 2,
+  // };
+
   const initNode: MosaicNode<number> = {
     direction: "row",
     first: 1,
-    second: 2,
+    second: {
+      direction: "column",
+      first: 2,
+      second: 3,
+    },
+    splitPercentage: 40,
   };
   // const initNode: MosaicNode<number> = null;
 
@@ -33,11 +44,23 @@
       const {
         data: { index, contents },
       } = await axios.get(`${import.meta.env.VITE_API_URL}/pages/${id}`);
-      const parseContents = JSON.parse(contents);
-      profileList[index] = { index, contents: parseContents };
-      MosaicPanels.setCurrentNode(parseContents);
+
+      let parseContents;
+      try {
+        parseContents = JSON.parse(contents);
+      } catch (error) {
+        if (index > 0) {
+          alert(
+            contents + " cannot be parsed as JSON. It is shown by default."
+          );
+        }
+        parseContents = initNode;
+      }
+
+      profileList[index] = { index, contents: contents };
+      MosaicRender.setCurrentNode(parseContents);
     } catch (error) {
-      MosaicPanels.setCurrentNode(initNode);
+      MosaicRender.setCurrentNode(initNode);
       console.log(error);
     }
   };
@@ -53,12 +76,11 @@
       const data = [
         {
           index: active,
-          contents: JSON.stringify(Mosaic.getCurrentNode()),
+          contents: JSON.stringify(MosaicRoot.getCurrentNode()),
         },
       ];
 
       const apiMethod = profileList[active].index === -1 ? "post" : "put";
-      console.log("METHOD" + apiMethod);
       try {
         const options = {
           // <<<<<<< HEAD
