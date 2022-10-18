@@ -44,8 +44,20 @@
       const {
         data: { index, contents },
       } = await axios.get(`${import.meta.env.VITE_API_URL}/pages/${id}`);
-      const parseContents = JSON.parse(contents);
-      profileList[index] = { index, contents: parseContents };
+
+      let parseContents;
+      try {
+        parseContents = JSON.parse(contents);
+      } catch (error) {
+        if (index > 0) {
+          alert(
+            contents + " cannot be parsed as JSON. It is shown by default."
+          );
+        }
+        parseContents = initNode;
+      }
+
+      profileList[index] = { index, contents: contents };
       MosaicRender.setCurrentNode(parseContents);
     } catch (error) {
       MosaicRender.setCurrentNode(initNode);
@@ -69,7 +81,6 @@
       ];
 
       const apiMethod = profileList[active].index === -1 ? "post" : "put";
-      console.log("METHOD" + apiMethod);
       try {
         const options = {
           // <<<<<<< HEAD
