@@ -85,5 +85,6 @@
     padding: 4px;
     background: #636363;
     display: flex;
+    overflow: hidden;
   }
 </style>
