@@ -2,6 +2,7 @@
   import noop from "lodash/noop";
   import { MosaicRoot } from "./lib/MosaicRoot";
   import { MosaicActions } from "./lib/Mosaic";
+  import.meta;
 
   import type {
     MosaicBranch,
@@ -73,6 +74,13 @@
       this.props.onClick();
     }
   }
+  const imgExchange = new URL("assets/exchange-20.svg", import.meta.url).href;
+  const imgAddColumnRight = new URL(
+    "assets/add-column-right-20.svg",
+    import.meta.url
+  ).href;
+  const imgMaximize = new URL("assets/maximize-20.svg", import.meta.url).href;
+  const imgCross = new URL("assets/cross-20.svg", import.meta.url).href;
 </script>
 
 <div class="panel-topbar">
@@ -84,19 +92,16 @@
         title="Replace Window"
         on:click={replaceWindowClick}
       >
-        <img
-          src="/images/exchange-20.svg"
-          width="20px"
-          height="20px"
-          alt="Replace"
-        />
+        <!-- src="/images/exchange-20.svg" -->
+        <!-- <img src={imgUrl} width="20px" height="20px" alt="Replace" /> -->
+        <img src={imgExchange} width="20px" height="20px" alt="Replace" />
       </button>
       <button
         class="button-split"
         title="Split Window"
         on:click={splitWindowClick}
         ><img
-          src="/images/add-column-right-20.svg"
+          src={imgAddColumnRight}
           width="20px"
           height="20px"
           alt="Split"
@@ -105,7 +110,7 @@
 
       <button class="button-expand" title="Expand" on:click={expandWindowClick}
         ><img
-          src="/images/maximize-20.svg"
+          src={imgMaximize}
           width="20px"
           height="20px"
           alt="Expand"
@@ -115,12 +120,7 @@
         class="button-close"
         title="Close Window"
         on:click={closeWindowClick}
-        ><img
-          src="/images/cross.svg"
-          width="20px"
-          height="20px"
-          alt="Close"
-        /></button
+        ><img src={imgCross} width="20px" height="20px" alt="Close" /></button
       >
     </div>
   {:else}
