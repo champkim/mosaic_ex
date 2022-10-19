@@ -1,17 +1,13 @@
 import { writable } from "svelte/store";
 import flatten from "lodash/flatten";
 import dropRight from "lodash/dropRight";
-import { v4 as uuid } from "uuid";
 import type {
-  MosaicKey,
   MosaicParent,
   MosaicNode,
   MosaicBranch,
   MosaicDirection,
   MarkUps,
   MosaicPath,
-  ResizeOptions,
-  CreateNode,
 } from "./type/commonType";
 import {
   Corner,
@@ -148,7 +144,6 @@ class Mosaic implements AppState {
           },
         },
       ]);
-
       return this.onRenderRecursively();
     }
   }
@@ -161,10 +156,22 @@ class Mosaic implements AppState {
   onRenderRecursively(): Array<MarkUps> {
     this.panelMarkups = [];
     this.newWindowCount = 0;
+
+    const elements = document.getElementsByClassName("split");
+    while(elements.length > 0){
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+    
     //console.log(this.currentNode);
     this.renderRecursively(this.currentNode, this.boundingBox, this.path);
     this.windowCount = this.newWindowCount;
     return this.panelMarkups;
+  }
+
+  nonNullElement(
+    x: MarkUps | MarkUps[] | Split | null
+  ): x is MarkUps | MarkUps[] | Split {
+    return x !== null;
   }
 
   private renderRecursively(
@@ -183,16 +190,9 @@ class Mosaic implements AppState {
       return flatten(
         [
           this.renderRecursively(node.first, first, path.concat("first")),
-          new Split({
-            target: document.getElementById("mosaic"),
-            props: {
-              boundbox: second,
-              direction: node.direction,
-              path,
-            },
-          }),
+          this.renderSplit(node.direction, second, path),
           this.renderRecursively(node.second, second, path.concat("second")),
-        ] //.filter(nonNullElement)
+        ].filter(this.nonNullElement)
       );
     } else {
       let markups: MarkUps = {
@@ -212,6 +212,23 @@ class Mosaic implements AppState {
       }
       //reat 에서는  {this.props.renderTile(node, path)} 여기서 한번 html 생성. ,,
     }
+  }
+
+  private renderSplit(
+    direction: MosaicDirection,
+    boundbox: BoundingBox,
+    path: MosaicBranch[]
+  ) {
+    return new Split({
+      target: document.getElementById("mosaic"),
+      props: {
+        boundbox,
+        direction,
+        path,
+      },
+    });
+
+    // return <Split boundbox={boundbox}/>
   }
 
   private checkCreateNode() {
