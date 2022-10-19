@@ -15,12 +15,15 @@
 
   onMount(() => {
     function resize(e) {
-      const parent = splitRef.parentElement.getBoundingClientRect();
+      const parent = document.getElementById("mosaic").getBoundingClientRect();
+      const Y = e.clientY || e.touches[0].clientY;
+      const X = e.clientX || e.touches[0].clientX;
+      console.log(parent, X, Y);
       let percent = 0;
       if (direction === "column") {
-        percent = ((e.clientY - parent.top) / parent.height) * 100.0;
+        percent = ((Y - parent.top) / parent.height) * 100.0;
       } else {
-        percent = ((e.clientX - parent.left) / parent.width) * 100.0;
+        percent = ((X - parent.left) / parent.width) * 100.0;
       }
       if (percent > 20 && percent < 80) MosaicRender.onResize(path, percent);
     }
