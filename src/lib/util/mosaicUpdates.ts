@@ -1,8 +1,11 @@
 import get from "lodash/get";
 import set from "lodash/set";
 import clone from "lodash/clone";
+import isEqual from "lodash/isEqual";
+import take from "lodash/take";
 import dropRight from "lodash/dropRight";
 import last from "lodash/last";
+import drop from "lodash/drop";
 //import update from "svelte-Splitpanes";
 import update from "immutability-helper";
 
@@ -17,6 +20,8 @@ import type {
   MosaicUpdateSpec,
 } from "../type/commonType";
 
+import { MosaicDropTargetPosition } from "../type/dropTypes";
+
 import {
   getAndAssertNodeAtPathExists,
   getOtherBranch,
@@ -27,6 +32,88 @@ export enum Corner {
   TOP_RIGHT,
   BOTTOM_LEFT,
   BOTTOM_RIGHT,
+}
+
+/**
+ * Creates a `MosaicUpdate<T>` to split the _leaf_ at `destinationPath` into a node of it and the node from `sourcePath`
+ * placing the node from `sourcePath` in `position`.
+ * @param root
+ * @param sourcePath
+ * @param destinationPath
+ * @param position
+ * @returns {(MosaicUpdate<T>|{path: MosaicPath, spec: {$set: {first: MosaicNode<T>, second: MosaicNode<T>, direction: MosaicDirection}}})[]}
+ */
+export function createDragToUpdates<T extends MosaicKey>(
+  root: MosaicNode<T>,
+  sourcePath: MosaicPath,
+  destinationPath: MosaicPath,
+  position: MosaicDropTargetPosition
+): MosaicUpdate<T>[] {
+  let destinationNode = getAndAssertNodeAtPathExists(root, destinationPath);
+  const updates: MosaicUpdate<T>[] = [];
+
+  const destinationIsParentOfSource = isPathPrefixEqual(
+    sourcePath,
+    destinationPath,
+    destinationPath.length
+  );
+  if (destinationIsParentOfSource) {
+    // Must explicitly remove source from the destination node
+    destinationNode = updateTree(destinationNode, [
+      createRemoveUpdate(
+        destinationNode,
+        drop(sourcePath, destinationPath.length)
+      ),
+    ]);
+  } else {
+    // Can remove source normally
+    updates.push(createRemoveUpdate(root, sourcePath));
+
+    // Have to drop in the correct destination after the source has been removed
+    const removedNodeParentIsInPath = isPathPrefixEqual(
+      sourcePath,
+      destinationPath,
+      sourcePath.length - 1
+    );
+    if (removedNodeParentIsInPath) {
+      destinationPath.splice(sourcePath.length - 1, 1);
+    }
+  }
+
+  const sourceNode = getAndAssertNodeAtPathExists(root, sourcePath);
+  let first: MosaicNode<T>;
+  let second: MosaicNode<T>;
+  if (
+    position === MosaicDropTargetPosition.LEFT ||
+    position === MosaicDropTargetPosition.TOP
+  ) {
+    first = sourceNode;
+    second = destinationNode;
+  } else {
+    first = destinationNode;
+    second = sourceNode;
+  }
+
+  let direction: MosaicDirection = "column";
+  if (
+    position === MosaicDropTargetPosition.LEFT ||
+    position === MosaicDropTargetPosition.RIGHT
+  ) {
+    direction = "row";
+  }
+
+  updates.push({
+    path: destinationPath,
+    spec: {
+      $set: { first, second, direction },
+    },
+  });
+
+  return updates;
+}
+
+function isPathPrefixEqual(a: MosaicPath, b: MosaicPath, length: number) {
+  return isEqual(take(a, length), take(b, length));
 }
 
 /**
@@ -56,13 +143,13 @@ export function updateTree<T extends MosaicKey>(
   let currentNode = root;
   updates.forEach((mUpdate: MosaicUpdate<T>) => {
     //console.log(mUpdate);
-    console.log(currentNode + ">>>mUpdate: " + mUpdate);
     currentNode = update(
       currentNode as MosaicParent<T>,
       buildSpecFromUpdate(mUpdate)
     );
   });
 
+  console.log("updateTree >> ", currentNode);
   return currentNode;
 }
 

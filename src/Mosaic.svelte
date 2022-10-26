@@ -1,13 +1,23 @@
 <script lang="ts">
+  import defer from "lodash/defer";
+  import isEqual from "lodash/isEqual";
+  import dropRight from "lodash/dropRight";
   import MosaicPanel from "./MosaicPanel.svelte";
   import { MosaicRender, MosaicRoot } from "./lib/MosaicRoot";
   import { MosaicActions } from "./lib/Mosaic";
   import type { CreateNode } from "./lib/type/commonType";
+  import type { MosaicDropTargetPosition } from "./lib/type/dropTypes";
+
+  import { createDragToUpdates } from "./lib/util/mosaicUpdates";
   import { getAndAssertNodeAtPathExists } from "./lib/util/mosaicUtilities";
+  import { detach_after_dev } from "svelte/internal";
   let offsetWidth: number[] = [];
   let offsetHeight: number[] = [];
 
+  //let a: Function;
+
   let dragItemPath = [];
+  //export d:(e:mouse\) => void
 
   const initClassName = (e) => {
     e.target.className = e.target.className.replace(
@@ -47,33 +57,99 @@
 
   const onDragStart = (e, markup) => {
     console.log(e);
+    const hideTimer = defer(() => MosaicActions.actions.hide(markup.path));
+    console.log("createhideTimer: ", hideTimer);
     // MosaicActions.actions.remove(markup.path);
     e.dataTransfer.setData("markup", JSON.stringify(markup));
+    e.dataTransfer.setData("hideTimer", hideTimer);
+    //MosaicActions.actions.remove(e.markup.path);
   };
 
-  const onDrop = async(e) => {
+  // const onDrop = async (e) => {
+  const onDrop = (e, markup) => {
     e.preventDefault();
     console.log(e.target.id);
 
+    const hideTimer = e.dataTransfer.getData("hideTimer");
+    console.log("hideTimer", hideTimer);
+    window.clearTimeout(hideTimer);
+
     let direction = "";
     let isFirst = false;
+    let position: MosaicDropTargetPosition;
+
+    console.log(">>>>> " + e.target.className);
+
     if (e.target.className.indexOf("left") >= 0) {
       direction = "row";
+
+      position = "right";
     } else if (e.target.className.indexOf("right") >= 0) {
       isFirst = true;
       direction = "row";
-    } else if (e.target.className.indexOf("top") >= 0) {
-      direction = "column";
+      position = "left";
     } else if (e.target.className.indexOf("bottom") >= 0) {
+      direction = "column";
+
+      position = "top";
+    } else if (e.target.className.indexOf("top") >= 0) {
       isFirst = true;
       direction = "column";
+
+      position = "bottom";
     }
     initClassName(e);
-    const markup = JSON.parse(e.dataTransfer.getData("markup"));
-    console.log(markup);
-    const path = JSON.parse(e.target.id);
-    await move(path, direction, isFirst, markup);
-    MosaicActions.actions.remove(markup.path);
+
+    const destMarkup = JSON.parse(e.dataTransfer.getData("markup"));
+    const destinationPath = destMarkup.path;
+    const ownPath = markup.path;
+
+    console.log(
+      "position: " +
+        position +
+        " destinationPath: " +
+        destinationPath +
+        ", ownPath:  " +
+        ownPath
+    );
+
+    if (
+      position != null &&
+      destinationPath != null &&
+      !isEqual(destinationPath, ownPath)
+    ) {
+      MosaicActions.actions.updateTree(
+        createDragToUpdates(
+          //MosaicActions.actions.getRoot(),
+          MosaicRoot.getCurrentNode(),
+          ownPath,
+          destinationPath,
+          position
+        )
+      );
+      // if (props.onDragEnd) {
+      //   props.onDragEnd('drop');
+      // }
+    } else {
+      MosaicActions.actions.updateTree([
+        {
+          path: dropRight(ownPath),
+          spec: {
+            splitPercentage: {
+              $set: null,
+            },
+          },
+        },
+      ]);
+      // if (props.onDragEnd) {
+      //   props.onDragEnd('reset');
+      // }
+    }
+
+    // console.log(markup);
+    // const path = JSON.parse(e.target.id);
+    // await move(path, direction, isFirst, markup);
+    //MosaicActions.actions.remove(markup.path);
   };
 
   const move = (path, direction, isFirst, markup) => {
@@ -88,7 +164,9 @@
         second: isFirst
           ? +markup.name
           : getAndAssertNodeAtPathExists(root, path),
-        first: isFirst ? getAndAssertNodeAtPathExists(root, path) : +markup.name,
+        first: isFirst
+          ? getAndAssertNodeAtPathExists(root, path)
+          : +markup.name,
       })
     );
   };
@@ -99,8 +177,9 @@
   class="mosaic"
   style="flex-direction:row"
   on:dragover={onDragOver}
-  on:drop={onDrop}
 >
+  <!-- on:drop={(e) => onDrop(e, markup)} -->
+  <!-- on:drop={onDrop} -->
   {#each $MosaicRender as markup, index}
     <div
       id={JSON.stringify(markup.path)}
@@ -111,7 +190,15 @@
       draggable="true"
       on:dragstart={(e) => onDragStart(e, markup)}
       on:dragleave={onDragLeave}
+      on:drop={(e) => onDrop(e, markup)}
     >
+      <!-- draggable="true" -->
+      <!-- 
+        draggable="true"
+        on:dragstart={(e) => onDragStart(e, markup)}
+      on:dragleave={onDragLeave}
+      on:drop={(e) => onDrop(e, markup)} -->
+
       <!-- <MosaicPanel name={markup.name} /> -->
       <!-- ref={(element) => (this.rootElement = element)} -->
       <MosaicPanel
@@ -123,7 +210,9 @@
         <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
         <!-- rootElement={this.rootElement} -->
 
-        <span slot="title">Window {markup.name}</span>
+        <span slot="title">
+          Window {markup.name}
+        </span>
         <!-- {(markup.direction = offsetWidth[index] > offsetHeight[index] ? "row" : "column")} -->
         <h1 slot="contents">Window {markup.name}</h1>
         <!-- {offsetWidth[index]} x {offsetHeight[index]} -->

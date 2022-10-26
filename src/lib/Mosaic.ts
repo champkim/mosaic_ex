@@ -172,9 +172,9 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
     currentNode: MosaicNode<T> | null,
     suppressOnRelease: boolean = false
   ) => {
-    this.currentNode = currentNode;
+    // this.currentNode = currentNode;
     MosaicRender.setCurrentNode(currentNode);
-    // console.log(">>>>>>>>>> Set.. Cur.." + currentNode);
+    console.log(">>>>>>>>>> Set.. Cur..", currentNode);
 
     //여기 아래부분은 나중에 확인..
     // this.props.onChange!(currentNode);
