@@ -3,6 +3,7 @@
   import axios from "axios";
   import { MosaicRender, MosaicRoot } from "./lib/MosaicRoot";
   import type { MosaicNode } from "./lib/type/commonType";
+  import Mosaic from "./Mosaic.svelte";
 
   //const pagesurl = "http://127.0.0.1:3000/pages";
   //const pagesurl = "http://192.168.0.6:2001/pages";
@@ -97,6 +98,9 @@
       }
     }
   };
+  let isHover = false;
+  let hoverButton = 0;
+  console.log(hoverButton);
 </script>
 
 <div class="profile-button">
@@ -104,10 +108,21 @@
     <button
       on:click={() => onClickButton(name)}
       on:dblclick={onUpdateProfile}
-      class={`button-num ${active === name ? "active" : ""}`}
+      on:mouseover={() => {
+        isHover = true;
+        hoverButton = name;
+      }}
+      on:mouseleave={() => (isHover = false)}
+      class={`button-num ${active === name ? "active" : ""} ${hoverButton}`}
       >{name === 0 ? "Default" : name}</button
     >
   {/each}
+</div>
+<div
+  class={`thumnail ${isHover ? "hover" : ""}`}
+  style={`left: calc(86% + ${hoverButton}%)`}
+>
+  <Mosaic />
 </div>
 
 <style>
@@ -133,5 +148,16 @@
   }
   .button-num:first-child {
     border-left: 1px solid rgb(100, 127, 185);
+  }
+  .thumnail {
+    position: absolute;
+    background: black;
+    width: 150px;
+    height: 100px;
+    top: calc(100% - 137px);
+    display: none;
+  }
+  .thumnail.hover {
+    display: block;
   }
 </style>

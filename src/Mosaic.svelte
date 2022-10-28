@@ -74,43 +74,41 @@
     console.log("hideTimer", hideTimer);
     window.clearTimeout(hideTimer);
 
-    let direction = "";
-    let isFirst = false;
+    // let direction = "";
+    // let isFirst = false;
     let position: MosaicDropTargetPosition;
-
     console.log(">>>>> " + e.target.className);
 
     if (e.target.className.indexOf("left") >= 0) {
-      direction = "row";
-
-      position = "right";
-    } else if (e.target.className.indexOf("right") >= 0) {
-      isFirst = true;
-      direction = "row";
+      // direction = "row";
       position = "left";
+    } else if (e.target.className.indexOf("right") >= 0) {
+      // isFirst = true;
+      // direction = "row";
+      position = "right";
     } else if (e.target.className.indexOf("bottom") >= 0) {
-      direction = "column";
-
-      position = "top";
-    } else if (e.target.className.indexOf("top") >= 0) {
-      isFirst = true;
-      direction = "column";
-
+      // direction = "column";
       position = "bottom";
+    } else if (e.target.className.indexOf("top") >= 0) {
+      // isFirst = true;
+      // direction = "column";
+      position = "top";
     }
     initClassName(e);
 
-    const destMarkup = JSON.parse(e.dataTransfer.getData("markup"));
-    const destinationPath = destMarkup.path;
-    const ownPath = markup.path;
+    const srcMarkup = JSON.parse(e.dataTransfer.getData("markup"));
+    const destinationPath = markup.path;
+    const ownPath = srcMarkup.path;
 
     console.log(
-      "position: " +
-        position +
-        " destinationPath: " +
-        destinationPath +
-        ", ownPath:  " +
-        ownPath
+      "root: ",
+      MosaicActions.actions.getRoot(),
+      "position: ",
+      position,
+      " path: ",
+      ownPath,
+      " destinationPath: ",
+      destinationPath
     );
 
     if (
@@ -120,13 +118,14 @@
     ) {
       MosaicActions.actions.updateTree(
         createDragToUpdates(
-          //MosaicActions.actions.getRoot(),
-          MosaicRoot.getCurrentNode(),
+          MosaicActions.actions.getRoot(),
+          //MosaicRoot.getCurrentNode(),
           ownPath,
           destinationPath,
           position
         )
       );
+      console.log("drop", MosaicRoot.getCurrentNode());
       // if (props.onDragEnd) {
       //   props.onDragEnd('drop');
       // }
@@ -141,35 +140,35 @@
           },
         },
       ]);
+      console.log("reset", MosaicRoot.getCurrentNode());
       // if (props.onDragEnd) {
       //   props.onDragEnd('reset');
       // }
     }
-
     // console.log(markup);
     // const path = JSON.parse(e.target.id);
     // await move(path, direction, isFirst, markup);
     //MosaicActions.actions.remove(markup.path);
   };
 
-  const move = (path, direction, isFirst, markup) => {
-    const root = MosaicRoot.getCurrentNode();
+  // const move = (path, direction, isFirst, markup) => {
+  //   const root = MosaicRoot.getCurrentNode();
 
-    let createNode: CreateNode<number>;
-    createNode = MosaicRoot.createNode;
+  //   let createNode: CreateNode<number>;
+  //   createNode = MosaicRoot.createNode;
 
-    return Promise.resolve(createNode!()).then((node) =>
-      MosaicActions.actions.replaceWith(path, {
-        direction,
-        second: isFirst
-          ? +markup.name
-          : getAndAssertNodeAtPathExists(root, path),
-        first: isFirst
-          ? getAndAssertNodeAtPathExists(root, path)
-          : +markup.name,
-      })
-    );
-  };
+  //   return Promise.resolve(createNode!()).then((node) =>
+  //     MosaicActions.actions.replaceWith(path, {
+  //       direction,
+  //       second: isFirst
+  //         ? +markup.name
+  //         : getAndAssertNodeAtPathExists(root, path),
+  //       first: isFirst
+  //         ? getAndAssertNodeAtPathExists(root, path)
+  //         : +markup.name,
+  //     })
+  //   );
+  // };
 </script>
 
 <div
