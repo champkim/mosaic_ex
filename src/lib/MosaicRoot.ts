@@ -77,6 +77,7 @@ class Mosaic implements AppState {
 
   setCurrentNode(node) {
     this.currentNode = node;
+    console.log(">>>>>>>>>> SetCurrentNode", node);
     return this.onRenderRecursively();
   }
 
@@ -158,10 +159,10 @@ class Mosaic implements AppState {
     this.newWindowCount = 0;
 
     const elements = document.getElementsByClassName("split");
-    while(elements.length > 0){
-        elements[0].parentNode.removeChild(elements[0]);
+    while (elements.length > 0) {
+      elements[0].parentNode.removeChild(elements[0]);
     }
-    
+
     //console.log(this.currentNode);
     this.renderRecursively(this.currentNode, this.boundingBox, this.path);
     this.windowCount = this.newWindowCount;
@@ -190,6 +191,7 @@ class Mosaic implements AppState {
       return flatten(
         [
           this.renderRecursively(node.first, first, path.concat("first")),
+          //TODO: Test
           this.renderSplit(node.direction, second, path),
           this.renderRecursively(node.second, second, path.concat("second")),
         ].filter(this.nonNullElement)

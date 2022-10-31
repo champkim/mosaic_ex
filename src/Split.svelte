@@ -8,17 +8,31 @@
   export let boundbox: BoundingBox;
   export let path: string[];
 
+  const TOUCH_EVENT_OPTIONS = {
+    capture: true,
+    passive: false,
+  };
+
   let splitRef;
 
   let insetStr: string = "0% 0% 0% 0%";
   insetStr = `${boundbox.top}% ${boundbox.right}% ${boundbox.bottom}% ${boundbox.left}% `;
 
   onMount(() => {
+    // 모바일 기기에서의 Touch 이벤트
+    const isTouchScreen =
+      typeof window !== "undefined" &&
+      window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+    const startEventName = isTouchScreen ? "touchstart" : "mousedown";
+    const moveEventName = isTouchScreen ? "touchmove" : "mousemove";
+    const endEventName = isTouchScreen ? "touchend" : "mouseup";
+
     function resize(e) {
       const parent = document.getElementById("mosaic").getBoundingClientRect();
       const Y = e.clientY || e.touches[0].clientY;
       const X = e.clientX || e.touches[0].clientX;
-      console.log(parent, X, Y);
+
       let percent = 0;
       if (direction === "column") {
         percent = ((Y - parent.top) / parent.height) * 100.0;
@@ -29,17 +43,17 @@
     }
 
     splitRef.addEventListener(
-      "mousedown",
+      startEventName,
       function (e) {
-        document.addEventListener("mousemove", resize, false);
+        document.addEventListener(moveEventName, resize, false);
       },
       false
     );
     document.addEventListener(
-      "mouseup",
+      endEventName,
       function () {
-        document.removeEventListener("mousemove", resize, false);
-        splitRef.removeEventListener("mousemove", resize, false);
+        document.removeEventListener(moveEventName, resize, false);
+        splitRef.removeEventListener(moveEventName, resize, false);
       },
       false
     );
@@ -64,7 +78,8 @@
     margin-top: -3px;
   }
 
-  .split:hover {
+  .split:hover,
+  .split:active {
     background: rgba(125, 188, 255, 0.6);
   }
 </style>
