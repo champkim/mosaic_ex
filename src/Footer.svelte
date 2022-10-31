@@ -122,7 +122,7 @@
   class={`thumnail ${isHover ? "hover" : ""}`}
   style={`left: calc(86% + ${hoverButton}%)`}
 >
-  <Mosaic />
+  <!-- <Mosaic /> -->
 </div>
 
 <style>

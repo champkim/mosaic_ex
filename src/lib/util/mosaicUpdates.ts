@@ -50,6 +50,14 @@ export function createDragToUpdates<T extends MosaicKey>(
   position: MosaicDropTargetPosition
 ): MosaicUpdate<T>[] {
   let destinationNode = getAndAssertNodeAtPathExists(root, destinationPath);
+
+  // console.log(
+  //   ">>>>>>>>>>>>>> getAndAssertNodeAtPathExists",
+  //   root,
+  //   destinationPath,
+  //   destinationNode
+  // );
+
   const updates: MosaicUpdate<T>[] = [];
 
   const destinationIsParentOfSource = isPathPrefixEqual(
@@ -58,6 +66,7 @@ export function createDragToUpdates<T extends MosaicKey>(
     destinationPath.length
   );
   if (destinationIsParentOfSource) {
+    // console.log(">>>>>>>>>>>>>> destinationIsParentOfSource", destinationNode);
     // Must explicitly remove source from the destination node
     destinationNode = updateTree(destinationNode, [
       createRemoveUpdate(
@@ -67,6 +76,7 @@ export function createDragToUpdates<T extends MosaicKey>(
     ]);
   } else {
     // Can remove source normally
+    // console.log(">>>>>>>>>>>>>> createRemoveUpdate", root, sourcePath);
     updates.push(createRemoveUpdate(root, sourcePath));
 
     // Have to drop in the correct destination after the source has been removed
@@ -76,6 +86,10 @@ export function createDragToUpdates<T extends MosaicKey>(
       sourcePath.length - 1
     );
     if (removedNodeParentIsInPath) {
+      // console.log(
+      //   ">>>>>>>>>>>>>> removedNodeParentIsInPath",
+      //   removedNodeParentIsInPath
+      // );
       destinationPath.splice(sourcePath.length - 1, 1);
     }
   }
@@ -149,7 +163,7 @@ export function updateTree<T extends MosaicKey>(
     );
   });
 
-  console.log("updateTree >> ", currentNode);
+  // console.log("updateTree >> ", currentNode);
   return currentNode;
 }
 
@@ -164,10 +178,13 @@ export function createRemoveUpdate<T extends MosaicKey>(
   path: MosaicPath
 ): MosaicUpdate<T> {
   const parentPath = dropRight(path);
+  // console.log("parentPath", parentPath);
   const nodeToRemove = last(path);
+  // console.log("nodeToRemove", nodeToRemove);
   const siblingPath = parentPath.concat(getOtherBranch(nodeToRemove!));
+  // console.log("siblingPath", siblingPath);
   const sibling = getAndAssertNodeAtPathExists(root, siblingPath);
-
+  // console.log("parentPath, sibling", parentPath, sibling);
   return {
     path: parentPath,
     spec: {

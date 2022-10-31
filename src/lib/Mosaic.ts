@@ -165,6 +165,8 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
   ) => {
     const currentNode = this.getRoot() || ({} as MosaicNode<T>);
 
+    // console.log("updateRoot: ", currentNode, updates);
+
     this.replaceRoot(updateTree(currentNode, updates), suppressOnRelease);
   };
 
@@ -174,7 +176,7 @@ class MosaicWithoutDragDropContext<T extends MosaicKey = string>
   ) => {
     // this.currentNode = currentNode;
     MosaicRender.setCurrentNode(currentNode);
-    console.log(">>>>>>>>>> Set.. Cur..", currentNode);
+    // console.log(">>>>>>>>>> Set.. Cur..", currentNode);
 
     //여기 아래부분은 나중에 확인..
     // this.props.onChange!(currentNode);

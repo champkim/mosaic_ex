@@ -9,14 +9,15 @@
   import type { MosaicDropTargetPosition } from "./lib/type/dropTypes";
 
   import { createDragToUpdates } from "./lib/util/mosaicUpdates";
-  import { getAndAssertNodeAtPathExists } from "./lib/util/mosaicUtilities";
+  import { tryJSonParse } from "./lib/util/dataUtils";
   import { detach_after_dev } from "svelte/internal";
   let offsetWidth: number[] = [];
   let offsetHeight: number[] = [];
 
   //let a: Function;
 
-  let dragItemPath = [];
+  // let dragItemPath = [];
+  let isDragStart = false;
   //export d:(e:mouse\) => void
 
   const initClassName = (e) => {
@@ -26,15 +27,45 @@
     );
   };
 
+  const onDragStart = (e, markup) => {
+    // console.log(">>>>>>>>>>>>>>>>>>>>>>> onDragStart", e);
+    e.dataTransfer.effectAllowed = "move";
+    const hideTimer = defer(() => MosaicActions.actions.hide(markup.path));
+    console.log("createhideTimer: ", hideTimer);
+    // MosaicActions.actions.remove(markup.path);
+    // e.dataTransfer.setData("id", JSON.stringify(e.target.id));
+    e.dataTransfer.setData("markup", JSON.stringify(markup));
+    e.dataTransfer.setData("hideTimer", hideTimer);
+    //MosaicActions.actions.remove(e.markup.path);
+    isDragStart = true;
+  };
+
   const onDragOver = (e) => {
     e.preventDefault();
+
+    // console.log(">>>>>>>>>>>>>>>>>>>>>> onDragOver", e);
+    // console.log("e.target ", e.target);
+    // console.log("e.currentTarget ", e.currentTarget);
+    // console.log("e.relatedTarget ", e.relatedTarget);
+    // console.log("e.originalTarget ", e.originalTarget);
+
+    if (!isDragStart) return;
+
     if (e.target.className.indexOf("mosaicpanel") >= 0) {
+      // if (e.target.toElement.className.indexOf("mosaicpanel") >= 0) {
       // 지금 drag중인 id 넣어야함
       // const path = e.dataTransfer.getData("moveId");
       // MosaicActions.actions.remove(path);
 
       const xPercent = (e.offsetX / e.target.offsetWidth) * 100;
       const yPercent = (e.offsetY / e.target.offsetHeight) * 100;
+
+      // console.log(
+      //   "====== xPercent: ",
+      //   xPercent,
+      //   "   ==========yPercent======== ",
+      //   yPercent
+      // );
 
       initClassName(e);
 
@@ -52,23 +83,78 @@
 
   const onDragLeave = (e) => {
     e.preventDefault();
+    console.log(">>>>>>>>>>>>>>>>>>>>>>> onDragLeave()", e);
+    if (!isDragStart) return;
     initClassName(e);
+    //e.dataTransfer.clearData();
   };
 
-  const onDragStart = (e, markup) => {
-    console.log(e);
-    const hideTimer = defer(() => MosaicActions.actions.hide(markup.path));
-    console.log("createhideTimer: ", hideTimer);
-    // MosaicActions.actions.remove(markup.path);
-    e.dataTransfer.setData("markup", JSON.stringify(markup));
-    e.dataTransfer.setData("hideTimer", hideTimer);
-    //MosaicActions.actions.remove(e.markup.path);
+  const onDragEnd = (e, markup) => {
+    e.preventDefault();
+    // console.log(">>>>>>>>>>>>>>>>>>>>>>> onDragEnd() ", e);
+    isDragStart = false;
+
+    // let srcData = e.dataTransfer.getData("markup");
+    // if (srcData != "") {
+    //   console.log("srcData", srcData);
+
+    //   const srcMarkup = JSON.parse(e.dataTransfer.getData("markup"));
+    //   const destinationPath = markup.path;
+    //   const ownPath = srcMarkup.path;
+
+    //   console.log(
+    //     "root: ",
+    //     MosaicActions.actions.getRoot(),
+    //     " path: ",
+    //     ownPath,
+    //     " destinationPath: ",
+    //     destinationPath
+    //   );
+    // }
+
+    // console.log(e.dataTransfer.dropEffect);
+
+    if ((e.dataTransfer.dropEffect = "none")) {
+      resetMosaic(markup.path);
+
+      //   MosaicActions.actions.updateTree([
+      //     {
+      //       path: dropRight(markup.path),
+      //       spec: {
+      //         splitPercentage: {
+      //           $set: null,
+      //         },
+      //       },
+      //     },
+      //   ]);
+      //   console.log("reset", MosaicRoot.getCurrentNode());
+    }
+    //e.dataTransfer.clearData();
   };
+
+  function resetMosaic(path: any) {
+    MosaicActions.actions.updateTree([
+      {
+        path: dropRight(path),
+        spec: {
+          splitPercentage: {
+            $set: null,
+          },
+        },
+      },
+    ]);
+    console.log("reset", MosaicRoot.getCurrentNode());
+  }
 
   // const onDrop = async (e) => {
   const onDrop = (e, markup) => {
     e.preventDefault();
-    console.log(e.target.id);
+    if (!isDragStart) return;
+
+    // console.log(">>>>>>>>>>>>>>>>>>>>>>> onDrop()", e);
+
+    // const srcID = JSON.parse(e.dataTransfer.getData("id"));
+    // console.log("targetid>>>>>>> " + e.target.id + " id>>>>" + srcID);
 
     const hideTimer = e.dataTransfer.getData("hideTimer");
     console.log("hideTimer", hideTimer);
@@ -96,20 +182,22 @@
     }
     initClassName(e);
 
-    const srcMarkup = JSON.parse(e.dataTransfer.getData("markup"));
+    // const srcMarkup = JSON.parse(e.dataTransfer.getData("markup"));
+    const srcMarkup = tryJSonParse(e.dataTransfer.getData("markup"));
+    if (srcMarkup == null) return;
+
     const destinationPath = markup.path;
     const ownPath = srcMarkup.path;
-
-    console.log(
-      "root: ",
-      MosaicActions.actions.getRoot(),
-      "position: ",
-      position,
-      " path: ",
-      ownPath,
-      " destinationPath: ",
-      destinationPath
-    );
+    // console.log(
+    //   "root: ",
+    //   MosaicActions.actions.getRoot(),
+    //   "position: ",
+    //   position,
+    //   " path: ",
+    //   ownPath,
+    //   " destinationPath: ",
+    //   destinationPath
+    // );
 
     if (
       position != null &&
@@ -130,17 +218,7 @@
       //   props.onDragEnd('drop');
       // }
     } else {
-      MosaicActions.actions.updateTree([
-        {
-          path: dropRight(ownPath),
-          spec: {
-            splitPercentage: {
-              $set: null,
-            },
-          },
-        },
-      ]);
-      console.log("reset", MosaicRoot.getCurrentNode());
+      resetMosaic(ownPath);
       // if (props.onDragEnd) {
       //   props.onDragEnd('reset');
       // }
@@ -148,7 +226,8 @@
     // console.log(markup);
     // const path = JSON.parse(e.target.id);
     // await move(path, direction, isFirst, markup);
-    //MosaicActions.actions.remove(markup.path);
+    //MosaicActions.actions.remove(markup.path)
+    // e.dataTransfer.clearData();
   };
 
   // const move = (path, direction, isFirst, markup) => {
@@ -171,12 +250,7 @@
   // };
 </script>
 
-<div
-  id="mosaic"
-  class="mosaic"
-  style="flex-direction:row"
-  on:dragover={onDragOver}
->
+<div id="mosaic" class="mosaic" style="flex-direction:row">
   <!-- on:drop={(e) => onDrop(e, markup)} -->
   <!-- on:drop={onDrop} -->
   {#each $MosaicRender as markup, index}
@@ -187,14 +261,17 @@
       bind:offsetWidth={offsetWidth[index]}
       bind:offsetHeight={offsetHeight[index]}
       draggable="true"
+      on:dragover={onDragOver}
       on:dragstart={(e) => onDragStart(e, markup)}
       on:dragleave={onDragLeave}
       on:drop={(e) => onDrop(e, markup)}
+      on:dragend={(e) => onDragEnd(e, markup)}
     >
-      <!-- draggable="true" -->
-      <!-- 
-        draggable="true"
-        on:dragstart={(e) => onDragStart(e, markup)}
+      <!-- on:dragend={onDragEnd} -->
+      <!-- on:drop={(e) => onDrop(e, markup)} -->
+      <!-- draggable="true"
+      on:dragover={onDragOver}
+      on:dragstart={(e) => onDragStart(e, markup)}
       on:dragleave={onDragLeave}
       on:drop={(e) => onDrop(e, markup)} -->
 
