@@ -5,12 +5,14 @@
   import MosaicPanel from "./MosaicPanel.svelte";
   import { MosaicRender, MosaicRoot } from "./lib/MosaicRoot";
   import { MosaicActions } from "./lib/Mosaic";
-  import type { CreateNode } from "./lib/type/commonType";
+  import Split from "./Split.svelte";
   import type { MosaicDropTargetPosition } from "./lib/type/dropTypes";
 
   import { createDragToUpdates } from "./lib/util/mosaicUpdates";
-  import { tryJSonParse } from "./lib/util/dataUtils";
+  import { tryJSonParse, boundingBoxToInset } from "./lib/util/dataUtils";
   import { detach_after_dev } from "svelte/internal";
+  import { BoundingBox } from "./lib/util/BoundingBox";
+  import { getOtherDirection } from "./lib/util/mosaicUtilities";
   let offsetWidth: number[] = [];
   let offsetHeight: number[] = [];
 
@@ -253,53 +255,58 @@
 <div id="mosaic" class="mosaic" style="flex-direction:row">
   <!-- on:drop={(e) => onDrop(e, markup)} -->
   <!-- on:drop={onDrop} -->
-  {#each $MosaicRender as markup, index}
-    <div
-      id={JSON.stringify(markup.path)}
-      class="mosaicpanel"
-      style="inset:{markup.style}"
-      bind:offsetWidth={offsetWidth[index]}
-      bind:offsetHeight={offsetHeight[index]}
-      draggable="true"
-      on:dragover={onDragOver}
-      on:dragstart={(e) => onDragStart(e, markup)}
-      on:dragleave={onDragLeave}
-      on:drop={(e) => onDrop(e, markup)}
-      on:dragend={(e) => onDragEnd(e, markup)}
-    >
-      <!-- on:dragend={onDragEnd} -->
-      <!-- on:drop={(e) => onDrop(e, markup)} -->
-      <!-- draggable="true"
-      on:dragover={onDragOver}
-      on:dragstart={(e) => onDragStart(e, markup)}
-      on:dragleave={onDragLeave}
-      on:drop={(e) => onDrop(e, markup)} -->
-
-      <!-- <MosaicPanel name={markup.name} /> -->
-      <!-- ref={(element) => (this.rootElement = element)} -->
-      <MosaicPanel
-        renderToolbar={markup.name != "2"}
-        path={markup.path}
-        direction={offsetWidth[index] > offsetHeight[index] ? "row" : "column"}
+  {#each $MosaicRender as markUps, index}
+    {#if markUps.splitPercentage === undefined}
+      <div
+        id={JSON.stringify(markUps.path)}
+        class="mosaicpanel"
+        style="inset:{boundingBoxToInset(markUps.boundingBox)}"
+        bind:offsetWidth={offsetWidth[index]}
+        bind:offsetHeight={offsetHeight[index]}
+        draggable="true"
+        on:dragover={onDragOver}
+        on:dragstart={(e) => onDragStart(e, markUps)}
+        on:dragleave={onDragLeave}
+        on:drop={(e) => onDrop(e, markUps)}
+        on:dragend={(e) => onDragEnd(e, markUps)}
       >
-        <!-- panelDirection={offsetWidth > offsetHeight ? "row" : "column"} -->
-        <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
-        <!-- rootElement={this.rootElement} -->
+        <!-- on:dragend={onDragEnd} -->
+        <!-- on:drop={(e) => onDrop(e, markup)} -->
+        <!-- draggable="true"
+          on:dragover={onDragOver}
+          on:dragstart={(e) => onDragStart(e, markup)}
+          on:dragleave={onDragLeave}
+          on:drop={(e) => onDrop(e, markup)} -->
 
-        <span slot="title">
-          Window {markup.name}
-        </span>
-        <!-- {(markup.direction = offsetWidth[index] > offsetHeight[index] ? "row" : "column")} -->
-        <h1 slot="contents">Window {markup.name}</h1>
-        <!-- {offsetWidth[index]} x {offsetHeight[index]} -->
-        <!-- {markup.direction} -->
-
-        <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
-      </MosaicPanel>
-
-      <!-- <div class="contents">Window {name || 1}</div> -->
-      <!-- <div class="contents">Window {markup.name || 1}</div> -->
-    </div>
+        <!-- <MosaicPanel name={markup.name} /> -->
+        <!-- ref={(element) => (this.rootElement = element)} -->
+        <MosaicPanel
+          renderToolbar={markUps.name != "2"}
+          path={markUps.path}
+          direction={offsetWidth[index] > offsetHeight[index]
+            ? "row"
+            : "column"}
+        >
+          <!-- panelDirection={offsetWidth > offsetHeight ? "row" : "column"} -->
+          <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
+          <!-- rootElement={this.rootElement} -->
+          <span slot="title">
+            Window {markUps.name}
+          </span>
+          <!-- {(markup.direction = offsetWidth[index] > offsetHeight[index] ? "row" : "column")} -->
+          <h1 slot="contents">Window {markUps.name}</h1>
+          <!-- {offsetWidth[index]} x {offsetHeight[index]} -->
+          <!-- {markup.direction} -->
+          <!-- direction={this.element.offsetWidth > this.element.offsetHeight? "row": "column"} -->
+        </MosaicPanel>
+      </div>
+      <!-- {#if markUps.splitPercentage !== undefined}   -->
+    {:else}
+      <Split {markUps} />
+    {/if}
+    <!-- <div class="contents">Window {name || 1}</div> -->
+    <!-- <div class="contents">Window {markup.name || 1}</div> -->
+    <!-- </div> -->
   {/each}
 </div>
 

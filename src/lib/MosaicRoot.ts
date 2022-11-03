@@ -9,6 +9,7 @@ import type {
   MarkUps,
   MosaicPath,
 } from "./type/commonType";
+import { createMarkUps } from "./type/commonType";
 import {
   Corner,
   getPathToCorner,
@@ -17,12 +18,14 @@ import {
   updateTree,
 } from "./util/mosaicUpdates";
 import { BoundingBox } from "./util/BoundingBox";
+import { boundingBoxToInset } from "./util/dataUtils";
 import {
   isParent,
   getLeaves,
   createBalancedTreeFromLeaves,
 } from "./util/mosaicUpdates";
-import Split from "../Split.svelte";
+
+import type Split from "../Split.svelte";
 
 //let initNode: any; //MosaicNode<number> = {};
 
@@ -158,28 +161,40 @@ class Mosaic implements AppState {
     this.panelMarkups = [];
     this.newWindowCount = 0;
 
-    const elements = document.getElementsByClassName("split");
-    while (elements.length > 0) {
-      elements[0].parentNode.removeChild(elements[0]);
-    }
+    // const elements = document.getElementsByClassName("split");
+    // while (elements.length > 0) {
+    //   elements[0].parentNode.removeChild(elements[0]);
+    // }
 
     //console.log(this.currentNode);
     this.renderRecursively(this.currentNode, this.boundingBox, this.path);
     this.windowCount = this.newWindowCount;
+    console.log(">>>>>>> panelMarkups Length: " + this.panelMarkups.length);
     return this.panelMarkups;
   }
 
-  nonNullElement(
-    x: MarkUps | MarkUps[] | Split | null
-  ): x is MarkUps | MarkUps[] | Split {
-    return x !== null;
-  }
+  // nonNullElement(
+  //   x: MarkUps | MarkUps[] | null
+  // ): x is MarkUps | MarkUps[] | null {
+  //   return x !== null;
+  // }
 
+  // nonNullElement(
+  //   x: MarkUps | MarkUps[] | Split | null
+  // ): x is MarkUps | MarkUps[] | Split | null {
+  //   return x !== null;
+  // }
+
+  // nonNullElement(x: MarkUps | MarkUps[] | null): x is MarkUps | MarkUps[] {
+  //   return x !== null;
+  // }
+
+  //: Array<MarkUps>
   private renderRecursively(
     node: MosaicNode<number>,
     boundingBox: BoundingBox,
     path: MosaicBranch[]
-  ): Array<MarkUps> {
+  ) {
     if (isParent(node)) {
       const splitPercentage =
         node.splitPercentage == null ? 50 : node.splitPercentage;
@@ -188,30 +203,29 @@ class Mosaic implements AppState {
         splitPercentage,
         node.direction
       );
-      return flatten(
-        [
-          this.renderRecursively(node.first, first, path.concat("first")),
-          //TODO: Test
-          this.renderSplit(node.direction, second, path),
-          this.renderRecursively(node.second, second, path.concat("second")),
-        ].filter(this.nonNullElement)
-      );
-    } else {
-      let markups: MarkUps = {
-        style: "",
-        name: "",
-        path: null,
-        //offsetRect: { offsetWidth: 0, offsetHeight: 0 },
-        //direction: "row",
-      };
 
-      markups.style = `${boundingBox.top}% ${boundingBox.right}% ${boundingBox.bottom}% ${boundingBox.left}%`;
+      // return flatten(
+      //   [
+      //     this.renderRecursively(node.first, first, path.concat("first")),
+      //     this.renderSplit(node.direction, second, splitPercentage, path),
+      //     this.renderRecursively(node.second, second, path.concat("second")),
+      //   ].filter(this.nonNullElement)
+      // );
+
+      this.renderRecursively(node.first, first, path.concat("first"));
+      this.renderSplit(node.direction, second, splitPercentage, path);
+      this.renderRecursively(node.second, second, path.concat("second"));
+    } else {
+      let markups = createMarkUps();
+      markups.boundingBox = boundingBox;
       markups.name = `${node}`;
       markups.path = path;
+      // markups.splitPercentage =
       this.panelMarkups.push(markups);
       if (this.newWindowCount < node) {
         this.newWindowCount = node;
       }
+      console.log("markups: ", markups);
       //reat 에서는  {this.props.renderTile(node, path)} 여기서 한번 html 생성. ,,
     }
   }
@@ -219,19 +233,35 @@ class Mosaic implements AppState {
   private renderSplit(
     direction: MosaicDirection,
     boundbox: BoundingBox,
+    splitPercentage: number,
     path: MosaicBranch[]
   ) {
-    return new Split({
-      target: document.getElementById("mosaic"),
-      props: {
-        boundbox,
-        direction,
-        path,
-      },
-    });
-
-    // return <Split boundbox={boundbox}/>
+    let markups = createMarkUps();
+    markups.boundingBox = boundbox;
+    markups.path = path;
+    markups.splitPercentage = splitPercentage;
+    markups.direction = direction;
+    this.panelMarkups.push(markups);
+    console.log("split: ", markups);
   }
+
+  // private renderSplit(
+  //   direction: MosaicDirection,
+  //   boundbox: BoundingBox,
+  //   splitPercentage: number,
+  //   path: MosaicBranch[]
+  // ) {
+  //   return new Split({
+  //     target: document.getElementById("mosaic"),
+  //     props: {
+  //       boundbox,
+  //       direction,
+  //       path,
+  //     },
+  //   });
+
+  //   // return <Split boundbox={boundbox}/>
+  // }
 
   private checkCreateNode() {
     if (this.createNode == null) {

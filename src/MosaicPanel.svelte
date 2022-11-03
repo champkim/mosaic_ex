@@ -129,7 +129,7 @@
 </div>
 
 <!-- <div class="contents">Window {name || 1}</div> -->
-<div class="contents" draggable="true"><slot name="contents" /></div>
+<div class="contents"><slot name="contents" /></div>
 
 <style>
   /* img {

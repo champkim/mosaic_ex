@@ -1,4 +1,5 @@
 import type { Spec } from "immutability-helper";
+import type { BoundingBox } from "../util/BoundingBox";
 
 /**
  * Valid node types
@@ -73,11 +74,30 @@ export type ResizeOptions = "DISABLED" | EnabledResizeOptions;
 // }
 
 export interface MarkUps {
-  style: string;
+  boundingBox: BoundingBox;
   name: string;
   path: MosaicBranch[];
+  splitPercentage?: number;
+  direction?: MosaicDirection;
   // offsetRect: OffsetRect;
   //direction: MosaicDirection;
+}
+
+// export interface MarkUps {
+//   splitPercentage?: number;
+//   direction?: MosaicDirection;
+// }
+
+export function createMarkUps(): MarkUps {
+  return {
+    boundingBox: undefined,
+    name: undefined,
+    path: undefined,
+    splitPercentage: undefined,
+    direction: undefined,
+    //offsetRect: { offsetWidth: 0, offsetHeight: 0 },
+    //direction: "row",
+  };
 }
 
 export interface EnabledResizeOptions {
