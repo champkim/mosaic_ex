@@ -7,17 +7,22 @@
   import { MosaicActions } from "./lib/Mosaic";
   import Split from "./Split.svelte";
   import type { MosaicDropTargetPosition } from "./lib/type/dropTypes";
-
+  import type { MosaicNode } from "./lib/type/commonType";
   import { createDragToUpdates } from "./lib/util/mosaicUpdates";
   import { tryJSonParse, boundingBoxToInset } from "./lib/util/dataUtils";
   import { detach_after_dev } from "svelte/internal";
   import { BoundingBox } from "./lib/util/BoundingBox";
   import { getOtherDirection } from "./lib/util/mosaicUtilities";
+
+  export let initNode: MosaicNode<number>;
+
+  if (initNode != undefined) {
+    MosaicRender.setCurrentNode(initNode);
+  }
+
   let offsetWidth: number[] = [];
   let offsetHeight: number[] = [];
-
   //let a: Function;
-
   // let dragItemPath = [];
   let isDragStart = false;
   //export d:(e:mouse\) => void
@@ -302,8 +307,15 @@
       </div>
       <!-- {#if markUps.splitPercentage !== undefined}   -->
     {:else}
+      <!-- <div style={boundingBoxToInset(markUps.boundingBox)}><h1>split</h1></div> -->
       <Split {markUps} />
     {/if}
+
+    <!-- direction={markUps.direction}
+        boundingBox={markUps.boundingBox}
+        splitPercentage={markUps.splitPercentage}
+        path={markUps.path} -->
+    <!-- <Split {markUps} /> -->
     <!-- <div class="contents">Window {name || 1}</div> -->
     <!-- <div class="contents">Window {markup.name || 1}</div> -->
     <!-- </div> -->

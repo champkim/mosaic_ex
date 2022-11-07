@@ -4,6 +4,7 @@
   import { MosaicRender, MosaicRoot } from "./lib/MosaicRoot";
   import type { MosaicNode } from "./lib/type/commonType";
   import Mosaic from "./Mosaic.svelte";
+  import TopBar from "./TopBar.svelte";
 
   //const pagesurl = "http://127.0.0.1:3000/pages";
   //const pagesurl = "http://192.168.0.6:2001/pages";
@@ -24,6 +25,22 @@
     },
     splitPercentage: 40,
   };
+
+  const initNode2: MosaicNode<number> = {
+    direction: "row",
+    first: 1,
+    second: {
+      direction: "column",
+      first: 2,
+      second: {
+        direction: "row",
+        first: 3,
+        second: 4,
+      },
+    },
+    splitPercentage: 40,
+  };
+
   // const initNode: MosaicNode<number> = null;
 
   let array: number[] = [0, 1, 2, 3, 4, 5];
@@ -66,6 +83,10 @@
     }
   };
 
+  function getActiveNode(): MosaicNode<number> {
+    return initNode2;
+  }
+
   onMount(async () => await getPageDataById(0));
 
   const onUpdateProfile = async () => {
@@ -101,6 +122,18 @@
   let isHover = false;
   let hoverButton = 0;
   console.log(hoverButton);
+
+  const onMouseover = (name) => {
+    if (!isHover) {
+      isHover = true;
+      hoverButton = name;
+      console.log("move" + hoverButton);
+    }
+  };
+
+  const onMouseleave = () => {
+    isHover = false;
+  };
 </script>
 
 <div class="profile-button">
@@ -108,21 +141,19 @@
     <button
       on:click={() => onClickButton(name)}
       on:dblclick={onUpdateProfile}
-      on:mouseover={() => {
-        isHover = true;
-        hoverButton = name;
-      }}
-      on:mouseleave={() => (isHover = false)}
+      on:mouseover={() => onMouseover(name)}
+      on:mouseleave={onMouseleave}
       class={`button-num ${active === name ? "active" : ""} ${hoverButton}`}
       >{name === 0 ? "Default" : name}</button
     >
   {/each}
 </div>
+
 <div
   class={`thumnail ${isHover ? "hover" : ""}`}
-  style={`left: calc(86% + ${hoverButton}%)`}
+  style={`left: calc(80% + ${hoverButton}%)`}
 >
-  <!-- <Mosaic /> -->
+  <Mosaic initNode={getActiveNode()} />
 </div>
 
 <style>
@@ -151,13 +182,16 @@
   }
   .thumnail {
     position: absolute;
-    background: black;
-    width: 150px;
-    height: 100px;
-    top: calc(100% - 137px);
+    /* background: black; */
+    /* width: 150px;
+    height: 100px; */
+
     display: none;
   }
   .thumnail.hover {
+    width: 350px;
+    height: 300px;
+    top: calc(100% - 300px);
     display: block;
   }
 </style>
